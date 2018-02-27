@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Tremend QA Quizz - rerun</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h2> <span th:text="*{formdata.firstname} "> </span><span th:text="*{formdata.lastname}"></span></h2>
+<h1>Question <span th:text="*{formdata.questionNR}"></span></h1>
+<!--//introduc o variabila in URLul sursa al pozei-->
+<img th:src="@{${'/images/'+formdata.questionNR+'.gif'}}" alt="Question" style="width:25%;"/>
+<form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+    <p><input type="radio" th:field="*{answer}"  th:checked="${flag}" th:value="1"/> 1.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="2"/> 2.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="3"/> 3.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="4"/> 4.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="5"/> 5.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="6"/> 6.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="7"/> 7.
+        <input type="radio" th:field="*{answer}" checked="unchecked" th:value="8"/> 8.
+        <input type="hidden" th:field="*{questionNR}" th:value="*{questionNR}"/>
+        <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
+        <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
+    </p>
+    <p><input type="submit" value="Submit" />
+        <input type="reset" value="Reset" />
+    </p>
+</form>
+</body>
+</html>
