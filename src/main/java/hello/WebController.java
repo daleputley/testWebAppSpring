@@ -32,7 +32,7 @@ public class WebController {
     @RequestMapping("dbdelete")
     public String dbdelete(Model model) {
         repository.deleteAll();
-        return "dbdelete";
+        return "dbdelete"; 
     }
 
     //cand vine un raspuns prin POST
