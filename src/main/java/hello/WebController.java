@@ -6,6 +6,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @Controller
 public class WebController {
 
@@ -13,6 +15,7 @@ public class WebController {
     @Autowired
     private CandidateRepository repository;
     Query query=new Query();
+    Date startTimeObj= new Date();
 
     //mapping pentru prima lansarea quizzului.
     @RequestMapping("welcome")
@@ -24,7 +27,7 @@ public class WebController {
 
         //pun form data in Model
         model.addAttribute("formdata", formdata);
-        //System.out.println("********************* MODEL:"+model.toString());
+        System.out.println("********************* MODEL:"+model.toString());
         return "welcome";
     }
 
@@ -32,46 +35,54 @@ public class WebController {
     @RequestMapping("dbdelete")
     public String dbdelete(Model model) {
         repository.deleteAll();
-        return "dbdelete"; 
+        return "dbdelete";
     }
 
     //cand vine un raspuns prin POST
     @PostMapping("/query")
-    public String greetingSubmit(@ModelAttribute Formdata formdata, Model model) {
+    public String greetingSubmit(@ModelAttribute("formdata") Formdata formdata, Model model) {
+
         //numele default al paginii afisate
         String page="query";
-        String allAnswers, unupdatedAnswers;
-        int unupdatedAnswersLength=0;
 
-        //!!!!!!!!!!//aici e un serious bug  - daca am ddoi candidati cu acelasi nume se confunda
-        Candidate unupdatedCandidate = repository.findByFirstName(formdata.getFirstname());
+        String allAnswers, unupdatedAnswers;
+
+        int unupdatedAnswersLength=0;
+        long startTime=startTimeObj.getTime();
+
+        System.out.println("startTime primit cu Formdata in Query:"+formdata.getStartTime());
+        System.out.println("nume primit cu Formdata in Query:"+formdata.getFirstname());
+        System.out.println("prenume primit cu Formdata in Query:"+formdata.getLastname());
+        Candidate unupdatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
         //daca exista deja candidatul
         if (unupdatedCandidate!=null) {
             unupdatedAnswers = unupdatedCandidate.answers;
             unupdatedAnswersLength=unupdatedAnswers.length();
             //si daca a dat toate raspunsurile
-            if (unupdatedAnswersLength+1 == Config.TOTAL_QUESTIONS ) {
+            if (unupdatedAnswersLength+1 == Config.QUERY_LENGTH ) {
                 //pregatesc afisarea paginii de rezultate.
                 page = "results";
                 System.out.println("Unupdated answers length: "+unupdatedAnswersLength);
             }
         }
-
         //incrementez numarul intrebarii
         formdata.incrementQuestionNr();
+
+        System.out.println("Fac update la raspunsuri si salvez in DB. ");
+        updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer(), startTime);
+
+         //reconstruiesc obietul candidat, dupa update, ca sa vad daca exista intrebari fara raspuns
+        Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(),formdata.getLastname());
+        allAnswers=updatedCandidate.answers;
+        startTime=updatedCandidate.getStartTime();
+        System.out.println("All answers pentru candidatul actual: "+allAnswers+" Lungime: "+allAnswers.length());
+
+        formdata.setStartTime(startTime);
         //salvez noul formdata in obiectul Model
         model.addAttribute("formdata", formdata);
 
-        System.out.println("Fac update la raspunsuri si salvez in DB. ");
-        updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer());
         //golesc setAnswer ca sa nu se bifeze radiobuttonul intrebarii anterioare
         formdata.setAnswer(null);
-
-        //reconstruiesc obietul candidat, dupa update, ca sa vad daca exista intrebari fara raspuns
-        //!!!!!!!!!!//aici e un serious bug  -
-        Candidate candidate = repository.findByFirstName(formdata.getFirstname());
-        allAnswers=candidate.answers;
-        System.out.println("All answers pentru candidatul actual: "+allAnswers+" Lungime: "+allAnswers.length());
 
         int positionOfZero;
         //daca am trecut prin toate intrebarile, si este vreuna cu raspuns 0 nu voi afisa rezultatele,
@@ -88,7 +99,6 @@ public class WebController {
         if (allAnswers.length()==Config.TOTAL_QUESTIONS && !allAnswers.contains("0")){
             page="results";
         }
-
 
         model.addAttribute("allAnswers", allAnswers);
         return page;
@@ -112,21 +122,19 @@ public class WebController {
     }
 
     //adauga raspunsul actual la cele anterioare si salveaza in baza de date, la candidatul din formularul actual
-    public void updateAnswers(String FirstName, String Lastname, String answer){
+    public void updateAnswers(String FirstName, String Lastname, String answer, long startTime){
         //caut persoana dupa nume
-        Candidate person = repository.findByFirstName(FirstName);
+        Candidate person = repository.findCandidateByFirstNameAndAndLastName(FirstName, Lastname);
         String updatedAnswers;
 
         //daca prenumele nu exista in Mongo, creez un nou candidat cu datele primite de la quizz
         if (person==null){
-            repository.save(new Candidate(FirstName, Lastname, answer));
+            repository.save(new Candidate(FirstName, Lastname, answer, startTime));
             System.out.println(FirstName+Lastname+" created.");
         }
+
         //daca persoana exista in DB
            else         {
-            //verific daca si numele se potriveste
-            System.out.println("Person's last name:"+person.getLastName()+". Form lastname: "+Lastname);
-            if (person.getLastName().equals(Lastname)) {
                 //fac update la raspunsuri
                 //daca sunt mai putine raspunsuri decat numarul maxim de intrebari adaug raspunsul in coada
                 if (person.getAnswers().length()<Config.TOTAL_QUESTIONS){
@@ -156,10 +164,4 @@ public class WebController {
                 System.out.println("Answers saved to mongo.");
             }
         }
-    }
-
-
-
-
-
 }

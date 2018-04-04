@@ -1,6 +1,7 @@
 package hello;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import static hello.Config.QUERY_LENGTH;
 
 @SpringBootApplication
 class Application /*implements CommandLineRunner */{

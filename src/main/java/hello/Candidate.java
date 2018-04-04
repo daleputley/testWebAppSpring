@@ -8,19 +8,22 @@ public class Candidate {
 
     @Id
     public String id;
+
     public String firstName;
     public String lastName;
     public String answers="";
     Query query=new Query();
+    long startTime;
 
     //constructor simplu
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, String answers) {
+    public Candidate(String firstName, String lastName, String answers, long startTime) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.answers=answers;
+        this.startTime=startTime;
     }
 
     //adaug un raspuns la ce s-a adaugat pana acum
@@ -36,8 +39,6 @@ public class Candidate {
             this.answers=newAnswer;
         }
     }
-
-
 
     public String getId() {
         return id;
@@ -70,5 +71,9 @@ public class Candidate {
     public void setAnswers(String answers) {
         this.answers = answers;
     }
+
+    public long getStartTime() {return startTime; }
+
+    public void setStartTime(long startTime) {this.startTime = startTime; }
 
 }
