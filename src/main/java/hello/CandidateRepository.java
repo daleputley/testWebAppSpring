@@ -8,7 +8,6 @@ import java.util.List;
 public interface CandidateRepository extends MongoRepository<Candidate, String>{
 
     public Candidate findCandidateByFirstNameAndAndLastName(String firstName, String lastName);
-    public List<Candidate>  findByLastName(String lastName);
 
 }
 

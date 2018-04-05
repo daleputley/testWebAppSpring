@@ -54,6 +54,12 @@ public class Logic {
             randomOrder[i] = temp;
         }
 
+        //debug info
+        System.out.println("random order created: ");
+        for (int i=0; i<randomOrder.length; i++){
+            System.out.print(randomOrder[i]+" ");
+        }
+
         return randomOrder;
     }
 

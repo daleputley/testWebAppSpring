@@ -3,6 +3,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import static hello.Config.QUERY_LENGTH;
+
 //clasa candidata care contine datele de contact si un string cu raspunsurile lui
 public class Candidate {
 
@@ -12,6 +14,10 @@ public class Candidate {
     public String firstName;
     public String lastName;
     public String answers="";
+    int[] order = new int[QUERY_LENGTH];
+
+
+
     Query query=new Query();
     long startTime;
 
@@ -19,11 +25,12 @@ public class Candidate {
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, String answers, long startTime) {
+    public Candidate(String firstName, String lastName, String answers, long startTime, int[] order) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.answers=answers;
         this.startTime=startTime;
+        this.order=order;
     }
 
     //adaug un raspuns la ce s-a adaugat pana acum
@@ -75,5 +82,13 @@ public class Candidate {
     public long getStartTime() {return startTime; }
 
     public void setStartTime(long startTime) {this.startTime = startTime; }
+
+    public int[] getOrder() {
+        return order;
+    }
+
+    public void setOrder(int[] order) {
+        this.order = order;
+    }
 
 }

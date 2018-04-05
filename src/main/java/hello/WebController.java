@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 
+import static hello.Config.QUERY_LENGTH;
+
 @Controller
+@SessionAttributes("formdata")
 public class WebController {
 
     //instantiez candidate repository prin autowired
@@ -21,21 +24,30 @@ public class WebController {
     @RequestMapping("welcome")
     public String greetingForm(Model model) {
 
-        //construiesc un obiect formdata
+        //construiesc un obiect formdata - contine datele transmise prin formularul de intrebari
         Formdata formdata= new Formdata();
+        //initializez contorul intrebarilor
         formdata.setQuestionNR(1);
+        //randomizez ordinea intrebarilor si o memorez in formdata
+        formdata.setQuizOrder(Logic.randomize());
 
-        //pun form data in Model
+        int[] order=formdata.getQuizOrder();
+        //stabilesc prima intrebare care va fi afisata: prima din array-ul order[]
+        formdata.setCurrentQuestion(order[0]);
+
+        //debug log
+        System.out.print("Ordinea intrebarilor, salvata in formdata: ");
+        for (int i=0; i<QUERY_LENGTH; i++){
+            System.out.print(order[i]);
+        }
+        System.out.println(" ");
+        //debug log
+        System.out.println("Cand Welcome e afisat, currentQuestion= "+formdata.getCurrentQuestion());
+        System.out.println("Cand Welcome e afisat, questionNR= "+formdata.getQuestionNR());
+
+        //pun formdata in Model
         model.addAttribute("formdata", formdata);
-        System.out.println("********************* MODEL:"+model.toString());
         return "welcome";
-    }
-
-    //mapping pentru stergere baza de date
-    @RequestMapping("dbdelete")
-    public String dbdelete(Model model) {
-        repository.deleteAll();
-        return "dbdelete";
     }
 
     //cand vine un raspuns prin POST
@@ -45,39 +57,72 @@ public class WebController {
         //numele default al paginii afisate
         String page="query";
 
-        String allAnswers, unupdatedAnswers;
+        //string cu toate raspunsurile de pana la momentul actual
+        String allAnswers;
+
+        //string cu raspunsurile inainte de salvare in DB
+        String unupdatedAnswers;
 
         int unupdatedAnswersLength=0;
         long startTime=startTimeObj.getTime();
 
-        System.out.println("startTime primit cu Formdata in Query:"+formdata.getStartTime());
-        System.out.println("nume primit cu Formdata in Query:"+formdata.getFirstname());
-        System.out.println("prenume primit cu Formdata in Query:"+formdata.getLastname());
+        //debug logs
+        //System.out.println("startTime primit cu Formdata in Query:"+formdata.getStartTime());
+        //System.out.println("nume primit cu Formdata in Query:"+formdata.getFirstname());
+        //System.out.println("prenume primit cu Formdata in Query:"+formdata.getLastname());
+        System.out.println("Answer primit cu formdata:"+formdata.getAnswer());
+
+        int[] orderOfQuestions = formdata.getQuizOrder();
+
+        //debug log
+        System.out.print("Ordinea intrebarilor, venita cu formdata:");
+        for (int i=0; i<orderOfQuestions.length; i++){
+            System.out.print(orderOfQuestions[i]);
+        }
+        System.out.println("");
+        System.out.print("Indexul intrebarilor, venit cu formdata:"+formdata.getQuestionNR());
+        System.out.println("");
+        //PRELUCREZ DATELE PRIMITE prin POST **********************
+
+        //caut candidatul in DB, cu toate datele lui de pana acum
         Candidate unupdatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
         //daca exista deja candidatul
         if (unupdatedCandidate!=null) {
+            //caut raspunsurile lui anterioare
             unupdatedAnswers = unupdatedCandidate.answers;
+            System.out.println("Unupdated answers:"+unupdatedAnswers);
+            //aflu cate raspunsuri a dat
             unupdatedAnswersLength=unupdatedAnswers.length();
-            //si daca a dat toate raspunsurile
-            if (unupdatedAnswersLength+1 == Config.QUERY_LENGTH ) {
-                //pregatesc afisarea paginii de rezultate.
+            //iar daca a dat toate raspunsurile
+            if (unupdatedAnswersLength+1 == QUERY_LENGTH ) {
+                //pregatesc afisarea paginii de rezultate, in locul celei de query.
                 page = "results";
                 System.out.println("Unupdated answers length: "+unupdatedAnswersLength);
             }
         }
-        //incrementez numarul intrebarii
+        //atata vreme cat indexul intrebarilor nu a ajuns la limita stabilita prin QUERY_LENGTH...
+        if (formdata.getQuestionNR()<=QUERY_LENGTH) {
+            //stabilesc intrebarea care va fi afisata - pe baza questionNr, care e indexul array-ului Order[]
+            formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionNR() - 1)]);
+            System.out.println("La afisare pagina, currentQuestion= " + formdata.getCurrentQuestion());
+
+        //incrementez numarul intrebarii, pentru afisarea urmatoare
         formdata.incrementQuestionNr();
+        System.out.println("Dupa incrementare, inainte de afisare pagina, questionNr= "+formdata.getQuestionNR());
+        }
 
-        System.out.println("Fac update la raspunsuri si salvez in DB. ");
-        updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer(), startTime);
+        //Fac update la raspunsurile primite acum si le salvez in DB.
+        //System.out.println("Fac update la raspunsuri si salvez in DB sirul de raspunsuri. ");
+        updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer(), startTime, orderOfQuestions);
 
-         //reconstruiesc obietul candidat, dupa update, ca sa vad daca exista intrebari fara raspuns
+        //dupa update reconstruiesc obiectul Candidate ca sa vad daca exista intrebari fara raspuns
         Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(),formdata.getLastname());
         allAnswers=updatedCandidate.answers;
         startTime=updatedCandidate.getStartTime();
-        System.out.println("All answers pentru candidatul actual: "+allAnswers+" Lungime: "+allAnswers.length());
+        System.out.println("All answers pentru candidatul actual: "+allAnswers+". Lungime: "+allAnswers.length());
 
         formdata.setStartTime(startTime);
+
         //salvez noul formdata in obiectul Model
         model.addAttribute("formdata", formdata);
 
@@ -87,16 +132,16 @@ public class WebController {
         int positionOfZero;
         //daca am trecut prin toate intrebarile, si este vreuna cu raspuns 0 nu voi afisa rezultatele,
         // ci voi reafisa intrebarile fara raspuns
-        if (allAnswers.length()==Config.TOTAL_QUESTIONS && allAnswers.contains("0")){
+        if (allAnswers.length()==Config.QUERY_LENGTH && allAnswers.contains("0")){
             positionOfZero=allAnswers.indexOf("0")+1;
             formdata.setQuestionNR(positionOfZero);
-            System.out.println("Question nr set to "+positionOfZero);
+            //System.out.println("Question nr set to "+positionOfZero);
             //salvez noul formdata in obiectul Model
             model.addAttribute("formdata", formdata);
             page="rerun";
         }
-        //de pus aici o conditie pt cazul cand nu mai e niiucn zero
-        if (allAnswers.length()==Config.TOTAL_QUESTIONS && !allAnswers.contains("0")){
+        //daca nutoate intrebarile au primit raspuns pregatesc pagina de rezultate
+        if (allAnswers.length()==Config.QUERY_LENGTH && !allAnswers.contains("0")){
             page="results";
         }
 
@@ -121,15 +166,22 @@ public class WebController {
         return page;
     }
 
+    //mapping pentru stergere baza de date
+    @RequestMapping("dbdelete")
+    public String dbdelete(Model model) {
+        repository.deleteAll();
+        return "dbdelete";
+    }
+
     //adauga raspunsul actual la cele anterioare si salveaza in baza de date, la candidatul din formularul actual
-    public void updateAnswers(String FirstName, String Lastname, String answer, long startTime){
+    public void updateAnswers(String FirstName, String Lastname, String answer, long startTime, int[] order){
         //caut persoana dupa nume
         Candidate person = repository.findCandidateByFirstNameAndAndLastName(FirstName, Lastname);
         String updatedAnswers;
 
-        //daca prenumele nu exista in Mongo, creez un nou candidat cu datele primite de la quizz
+        //daca persoana nu exista in DB, creez un nou candidat cu datele primite de la quizz
         if (person==null){
-            repository.save(new Candidate(FirstName, Lastname, answer, startTime));
+            repository.save(new Candidate(FirstName, Lastname, answer, startTime, order));
             System.out.println(FirstName+Lastname+" created.");
         }
 
@@ -137,9 +189,9 @@ public class WebController {
            else         {
                 //fac update la raspunsuri
                 //daca sunt mai putine raspunsuri decat numarul maxim de intrebari adaug raspunsul in coada
-                if (person.getAnswers().length()<Config.TOTAL_QUESTIONS){
-                    person.addAnswer(answer);
-                    System.out.println("Answer added to person.");
+                if (person.getAnswers().length()<Config.QUERY_LENGTH){
+
+                    System.out.println("Answer and questions-order added to person.");
                 }
                 else
                     //daca s-a raspuns la toate intrebarile, facem inlocuiri in stringul cu raspunsuri
