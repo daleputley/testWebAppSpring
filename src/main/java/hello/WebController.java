@@ -136,12 +136,13 @@ public class WebController {
         if (allAnswers.length()==Config.QUERY_LENGTH && allAnswers.contains("0")){
             positionOfZero=allAnswers.indexOf("0")+1;
             formdata.setQuestionNR(positionOfZero);
+            formdata.setCurrentQuestion(orderOfQuestions[positionOfZero-1]);
             //System.out.println("Question nr set to "+positionOfZero);
             //salvez noul formdata in obiectul Model
             model.addAttribute("formdata", formdata);
             page="rerun";
         }
-        //daca nutoate intrebarile au primit raspuns pregatesc pagina de rezultate
+        //daca toate intrebarile au primit raspuns pregatesc pagina de rezultate
         if (allAnswers.length()==Config.QUERY_LENGTH && !allAnswers.contains("0")){
             page="results";
         }
@@ -191,15 +192,15 @@ public class WebController {
                 //fac update la raspunsuri
                 //daca sunt mai putine raspunsuri decat numarul maxim de intrebari adaug raspunsul in coada
                 if (person.getAnswers().length()<Config.QUERY_LENGTH){
-
+                    person.addAnswer(answer);
                     System.out.println("Answer and questions-order added to person.");
                 }
                 else
                     //daca s-a raspuns la toate intrebarile, facem inlocuiri in stringul cu raspunsuri
-                    if (person.getAnswers().length()==Config.TOTAL_QUESTIONS){
-                    if (answer==null){
-                        answer="0";
-                    }
+                    if (person.getAnswers().length()==Config.QUERY_LENGTH){
+                        if (answer==null){
+                            answer="0";
+                        }
 
                     //daca si a doua oara raspunde cu 0, alocam un non raspuns - altul decat null
                     if (answer=="0"){
@@ -210,7 +211,7 @@ public class WebController {
                     updatedAnswers=tools.replaceCharAt(person.getAnswers(), person.getAnswers().indexOf("0"), answer );
                     person.setAnswers(updatedAnswers);
                     System.out.println("Answers updated by replacement: "+updatedAnswers);
-                    }
+                }
 
                 //salvez datele persoanei
                 repository.save(person);

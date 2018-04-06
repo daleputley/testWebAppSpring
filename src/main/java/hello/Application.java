@@ -11,21 +11,10 @@ class Application /*implements CommandLineRunner */{
         SpringApplication.run(Application.class, args);
     }
 
-/*    @Override
-    public void run(String... args) throws Exception {
-        repository.deleteAll();
-        //save a couple of candidates
-        repository.save(new Candidate("Ion", "Popescu"));
-        repository.save(new Candidate("Andrea","Mihailescu"));
+    //TODO: - afisare buton ANSWER LATER (intrebarea ba primi answer 0)
+    //TODO: - afisarea linkurilor catre intrebarile la care nu s-a raspuns
+    //TODO: - repara timerul
+    //TODO: - trimite mail cu rezultatele unui quiz
+    //TODO: - interfata admin (vizualizeaza raspunsuri, sterge candidat, seteaza admini care sa primeasca mail)
 
-        //fetch candidates:
-            System.out.println("Customers found with findAll:");
-            System.out.println("-----------------------------");
-        for (Candidate candidate : repository.findAll()) {
-            System.out.println(candidate);
-        }
-        System.out.println("Customer found with findByFirstName('Andrea'):");
-        System.out.println("--------------------------------");
-        System.out.println(repository.findByFirstName("Andrea"));
-    }*/
 }

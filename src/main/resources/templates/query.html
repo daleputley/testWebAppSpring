@@ -23,9 +23,21 @@
         <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
         <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
     </p>
-    <p><input type="submit" value="Submit" />
+    <p>
+        <input type="submit" value="Submit" />
         <input type="reset" value="Reset" />
     </p>
 </form>
+
+<form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+    <input type="hidden" th:field="*{answer}" th:value="L"/>
+    <input type="hidden" th:field="*{questionNR}" th:value="*{questionNR}"/>
+    <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
+    <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
+    <p>
+        <input type="submit" value="Answer later" />
+    </p>
+</form>
+
 </body>
 </html>
