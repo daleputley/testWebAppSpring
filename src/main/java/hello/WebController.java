@@ -89,6 +89,7 @@ public class WebController {
         //daca exista deja candidatul
         if (unupdatedCandidate!=null) {
             //caut raspunsurile lui anterioare
+            System.out.println("Am gasit candidatul in baza de date.");
             unupdatedAnswers = unupdatedCandidate.answers;
             System.out.println("Unupdated answers:"+unupdatedAnswers);
             //aflu cate raspunsuri a dat
