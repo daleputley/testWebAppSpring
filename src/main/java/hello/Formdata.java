@@ -23,6 +23,11 @@ public class Formdata {
     DateFormat formatter = new SimpleDateFormat("HH:mm");
     private String dateFormatted;
 
+    //dynamic html
+    String divContent="" +
+            "<a href='#'>Primul link</a>" +
+            "<a href='#'>Al doilea link</a>";
+
     //getters and setters for the data
     public String getFirstname() {return firstname;}
     public void setFirstname(String firstname) {this.firstname = firstname;}
@@ -63,11 +68,14 @@ public class Formdata {
     public void setQuizOrder(int[] quizOrder) {this.quizOrder = quizOrder;    }
     public int[] getQuizOrder() {return quizOrder;}
 
-    public DateFormat getFormatter() {return formatter;    }
-    public void setFormatter(DateFormat formatter) {this.formatter = formatter;    }
+    public DateFormat getFormatter() {return formatter;}
+    public void setFormatter(DateFormat formatter) {this.formatter = formatter;}
 
     public int getCurrentQuestion() {return currentQuestion; }
     public void setCurrentQuestion(int currentQuestion) {this.currentQuestion = currentQuestion;}
 
+    public String getDivContent() {return divContent; }
+
+    public void setDivContent(String divContent) {this.divContent = divContent; }
 }
 

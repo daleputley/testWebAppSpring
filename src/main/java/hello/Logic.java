@@ -1,6 +1,9 @@
 package hello;
 
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static hello.Config.QUERY_LENGTH;
@@ -63,6 +66,11 @@ public class Logic {
         return randomOrder;
     }
 
+    public static ArrayList<WebContent> updateRows(String allAnswers){
+        ArrayList<WebContent> rows = new ArrayList<WebContent>();
+        
 
+        return rows;
+    };
 
 }
