@@ -1,6 +1,6 @@
 package hello;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import static hello.Config.QUERY_LENGTH;
@@ -13,12 +13,11 @@ public class Candidate {
 
     public String firstName;
     public String lastName;
-    public String answers="";
+    public String answers = "";
     int[] order = new int[QUERY_LENGTH];
 
 
-
-    Query query=new Query();
+    Query query = new Query();
     long startTime;
 
     //constructor simplu
@@ -28,22 +27,25 @@ public class Candidate {
     public Candidate(String firstName, String lastName, String answers, long startTime, int[] order) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.answers=answers;
-        this.startTime=startTime;
-        this.order=order;
+        this.answers = answers;
+        this.startTime = startTime;
+        this.order = order;
     }
 
     //adaug un raspuns la ce s-a adaugat pana acum
-    public void addAnswer (String newAnswer){
-        if (newAnswer==null) {newAnswer="0";}
+    public void addAnswer(String newAnswer) {
+        if ((newAnswer == null) || (newAnswer == "")) {
+            newAnswer = "0";
+        }
+
         //daca stringul nu e gol
         System.out.println("Daca stringul nu e gol il incrementez ");
-        if (this.answers!="") {
-            this.answers+=newAnswer;
+        if (this.answers != "") {
+            this.answers += newAnswer;
         }
         //daca e gol
         else {
-            this.answers=newAnswer;
+            this.answers = newAnswer;
         }
     }
 
@@ -79,9 +81,13 @@ public class Candidate {
         this.answers = answers;
     }
 
-    public long getStartTime() {return startTime; }
+    public long getStartTime() {
+        return startTime;
+    }
 
-    public void setStartTime(long startTime) {this.startTime = startTime; }
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+    }
 
     public int[] getOrder() {
         return order;

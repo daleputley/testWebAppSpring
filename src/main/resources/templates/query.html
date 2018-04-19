@@ -41,7 +41,7 @@
                 </p>
             </form>
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
-                <input type="hidden" th:field="*{answer}" th:value="L"/>
+                <input type="hidden" th:field="*{answer}" checked="unchecked" th:value="0"/>
                 <input type="hidden" th:field="*{questionNR}" th:value="*{questionNR}"/>
                 <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
                 <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
