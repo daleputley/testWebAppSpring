@@ -22,7 +22,7 @@ public class WebController {
     @Autowired
     private CandidateRepository repository;
 
-    Query query = new Query();
+    //Query query = new Query();
     Date startTimeObj = new Date();
 
     //mapping pentru prima lansarea quizzului.
@@ -42,7 +42,7 @@ public class WebController {
         }
 
         //initializez contorul intrebarilor
-        formdata.setQuestionNR(1);
+        formdata.setQuestionIndex(1);
 
         //randomizez ordinea intrebarilor si o memorez in formdata
         formdata.setQuizOrder(Logic.randomize());
@@ -67,43 +67,39 @@ public class WebController {
         return "welcome";
     }
 
-    //cand vine un raspuns prin POST
+    //**************************************POST mapping - QUERY page**************************
+
     @PostMapping("/query")
-    public String greetingSubmit(@ModelAttribute("formdata") Formdata formdata, @ModelAttribute("rows") ArrayList<WebContent> rows, Model model) {
+    public String greetingSubmit(@ModelAttribute("formdata") Formdata formdata,
+                                 @ModelAttribute("rows") ArrayList<WebContent> rows,
+                                 Model model) {
 
         //numele default al paginii afisate
         String page = "query";
-
         //string cu toate raspunsurile de pana la momentul actual
         String allAnswers;
-
         //string cu raspunsurile inainte de salvare in DB
         String unupdatedAnswers;
-
         //daca nu s-a dat niciun raspuns pana acum
         int unupdatedAnswersLength = 0;
         long startTime = startTimeObj.getTime();
 
-        //debug logs
-        //System.out.println("startTime primit cu Formdata in Query:"+formdata.getStartTime());
-        //System.out.println("nume primit cu Formdata in Query:"+formdata.getFirstname());
-        //System.out.println("prenume primit cu Formdata in Query:"+formdata.getLastname());
-
-        System.out.println("Answer primit cu formdata:" + formdata.getAnswer());
+                System.out.println("*******Answer primit cu formdata: " + formdata.getAnswer());
 
         int[] orderOfQuestions = formdata.getQuizOrder();
-
-                //debug log
-                //System.out.print("Ordinea intrebarilor, venita cu formdata:");
-                //for (int i = 0; i < orderOfQuestions.length; i++) {
-                //    System.out.print(orderOfQuestions[i]);
-                //}
-                //System.out.println("");
-                System.out.print("Indexul intrebarilor, venit cu formdata:" + formdata.getQuestionNR());
+                System.out.print("*******Ordinea intrebarilor primita cu formdata: ");
+                for (int i = 0; i < orderOfQuestions.length; i++) {
+                    System.out.print(orderOfQuestions[i]);
+                }
+                System.out.println("");
+                System.out.print("*******Index intrebari, venit cu formdata:" + formdata.getQuestionNR());
                 System.out.println("");
 
         //caut candidatul in DB, cu toate datele lui de pana acum
-        Candidate unupdatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
+        Candidate unupdatedCandidate =
+                repository.findCandidateByFirstNameAndAndLastName(
+                        formdata.getFirstname(),
+                        formdata.getLastname());
 
         //daca exista deja candidatul
         if (unupdatedCandidate != null) {
@@ -113,20 +109,20 @@ public class WebController {
             //aflu cate raspunsuri a dat
             unupdatedAnswersLength = unupdatedAnswers.length();
 
-            //iar daca a dat toate raspunsurile
-            if (unupdatedAnswersLength + 1 == QUERY_LENGTH) {
-                //pregatesc afisarea paginii de rezultate, in locul celei de query.
-                page = "results";
-                System.out.println("Unupdated answers length: " + unupdatedAnswersLength);
-            }
+        //iar daca a dat toate raspunsurile
+        if (unupdatedAnswersLength + 1 == QUERY_LENGTH) {
+            //pregatesc afisarea paginii de rezultate, in locul celei de query.
+            page = "results";
+            System.out.println("*******Unupdated answers length: " + unupdatedAnswersLength);
         }
+    }
 
         //daca indexul intrebarilor nu a ajuns la limita stabilita prin QUERY_LENGTH
         if (formdata.getQuestionNR() <= QUERY_LENGTH) {
             //stabilesc intrebarea care va fi afisata
             // questionNr - a cata intrebare din seria prestabilita - este si indexul array-ului Order[]
             formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionNR() - 1)]);
-            //System.out.println("La afisare pagina, currentQuestion= " + formdata.getCurrentQuestion());
+            System.out.println("*******La afisare pagina, currentQuestion= " + formdata.getCurrentQuestion());
 
             //incrementez numarul intrebarii, pentru afisarea urmatoare
             formdata.incrementQuestionNr();
@@ -134,7 +130,7 @@ public class WebController {
         }
 
         //Fac update la raspunsurile primite acum si le salvez in DB.
-        System.out.println("Fac update la raspunsuri si salvez in DB sirul de raspunsuri. ");
+        //System.out.println("Fac update la raspunsuri si salvez in DB sirul de raspunsuri. ");
         updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer(), startTime, orderOfQuestions);
 
         //dupa update reconstruiesc obiectul Candidate ca sa vad daca exista intrebari fara raspuns
@@ -160,9 +156,10 @@ public class WebController {
             positionOfZero = allAnswers.indexOf("0") + 1;
 
             //stabilesc numarul intrebarii
-            formdata.setQuestionNR(positionOfZero);
+            formdata.setQuestionIndex(positionOfZero);
             formdata.setCurrentQuestion(orderOfQuestions[positionOfZero - 1]);
-            //System.out.println("Question nr set to "+positionOfZero);
+            System.out.println("----------------------Question nr set to "+positionOfZero);
+            System.out.println("----------------------Current Question set to "+orderOfQuestions[positionOfZero - 1]);
             //salvez noul formdata in obiectul Model
             model.addAttribute("formdata", formdata);
             page = "rerun";
@@ -227,19 +224,13 @@ public class WebController {
             } else
                 //daca s-a raspuns la toate intrebarile, facem inlocuiri in stringul cu raspunsuri
                 if (person.getAnswers().length() == Config.QUERY_LENGTH) {
-                    if (answer == null) {
-                        answer = "0";
+                    if ((answer == null) || (answer== "")) {
+                        answer= "0";
                     }
-
-/*                    //daca si a doua oara raspunde cu 0, alocam un non raspuns - altul decat null
-                    if (answer == "0") {
-                        answer = "N";
-                    }*/
-
                     Logic tools = new Logic();
                     updatedAnswers = tools.replaceCharAt(person.getAnswers(), person.getAnswers().indexOf("0"), answer);
                     person.setAnswers(updatedAnswers);
-                    System.out.println("Answers updated by replacement: " + updatedAnswers);
+                    System.out.println("*******Answers updated by replacement: " + updatedAnswers);
                 }
 
             //salvez datele persoanei

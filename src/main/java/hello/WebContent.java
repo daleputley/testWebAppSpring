@@ -2,13 +2,14 @@ package hello;
 
 public class WebContent {
 
-        public int index=0;
-        public String link="<a href='#'>Primul link</a>";
-        public String answerStatus="not answered";
+    public int index = 0;
+    public String link = "" +
+            "<a href='#'>Primul link</a>";
+    public String answerStatus = "not answered";
 
-        //------------------------------Getters and Setters------------------------------
+    //------------------------------Getters and Setters------------------------------
 
-        public int getIndex() {
+    public int getIndex() {
         return index;
     }
 

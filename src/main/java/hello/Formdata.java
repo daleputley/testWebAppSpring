@@ -41,7 +41,7 @@ public class Formdata {
     public int getQuestionNR() {
         return questionNR;
     }
-    public void setQuestionNR(int questionNR) {
+    public void setQuestionIndex(int questionNR) {
         this.questionNR = questionNR;
     }
 

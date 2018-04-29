@@ -59,10 +59,20 @@
                     <th>LINK</th>
                 </tr>
                 <tr th:each="row : ${rows}">
-                    <td th:text="${row.index}">Onions</td>
+                    <td th:text="${(row.index+1)}">Onions</td>
                     <td th:text="${row.answerStatus}">yes</td>
                     <td>
-                        <a th:href="${row.link}">Link</a>
+                        <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+                            <p>
+                                <input type="hidden" th:field="*{answer}" checked="unchecked" th:value="rerun"/>
+                                <input type="hidden" th:field="*{questionNR}" th:value="*{row.index+1}"/>
+                                <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
+                                <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
+                            </p>
+                            <p>
+                                <input type="submit" value="Try again"/>
+                            </p>
+                        </form>
                     </td>
                 </tr>
             </table>
