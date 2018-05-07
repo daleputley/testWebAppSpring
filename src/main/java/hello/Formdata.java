@@ -1,18 +1,14 @@
 package hello;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
-
-import javax.management.QueryEval;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import static hello.Config.QUERY_LENGTH;
 
 public class Formdata {
 
     //form data
-    private int questionNR;
+    private int questionIndex;
     private int currentQuestion;
     private String answer;
     private String firstname, lastname;
@@ -38,11 +34,11 @@ public class Formdata {
     public String getLastname() {return lastname;}
     public void setLastname(String lastname){this.lastname = lastname;}
 
-    public int getQuestionNR() {
-        return questionNR;
+    public int getQuestionIndex() {
+        return questionIndex;
     }
     public void setQuestionIndex(int questionNR) {
-        this.questionNR = questionNR;
+        this.questionIndex = questionNR;
     }
 
     public String getAnswer() {
@@ -58,8 +54,8 @@ public class Formdata {
         System.out.println(startTime);
     }
 
-    public void incrementQuestionNr(){
-        this.questionNR++;
+    public void incrementQuestionIndex(){
+        this.questionIndex++;
     }
 
     public String getDateFormatted() {return dateFormatted;}

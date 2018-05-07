@@ -13,9 +13,8 @@ public class Candidate {
 
     public String firstName;
     public String lastName;
-    public String answers = "";
+    public int[] answers;
     int[] order = new int[QUERY_LENGTH];
-
 
     Query query = new Query();
     long startTime;
@@ -24,7 +23,7 @@ public class Candidate {
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, String answers, long startTime, int[] order) {
+    public Candidate(String firstName, String lastName, int[] answers, long startTime, int[] order) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.answers = answers;
@@ -32,21 +31,13 @@ public class Candidate {
         this.order = order;
     }
 
-    //adaug un raspuns la ce s-a adaugat pana acum
-    public void addAnswer(String newAnswer) {
-        if ((newAnswer == null) || (newAnswer == "")) {
-            newAnswer = "0";
-        }
+    //fac update la answers
+    public void addAnswer(int index, Integer newAnswer) {
 
-        //daca stringul nu e gol
-        System.out.println("Daca stringul nu e gol il incrementez ");
-        if (this.answers != "") {
-            this.answers += newAnswer;
+        if ((newAnswer == null)) {
+            newAnswer = 0;
         }
-        //daca e gol
-        else {
-            this.answers = newAnswer;
-        }
+        this.answers[index] = newAnswer;
     }
 
     public String getId() {
@@ -73,11 +64,11 @@ public class Candidate {
         this.lastName = lastName;
     }
 
-    public String getAnswers() {
+    public int[] getAnswers() {
         return answers;
     }
 
-    public void setAnswers(String answers) {
+    public void setAnswers(int[] answers) {
         this.answers = answers;
     }
 
