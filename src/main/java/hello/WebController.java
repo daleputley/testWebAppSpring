@@ -57,6 +57,7 @@ public class WebController {
             System.out.print(order[i]);
         }
         System.out.println(" ");
+
         //debug log
         //System.out.println("Cand Welcome e afisat, currentQuestion= " + formdata.getCurrentQuestion());
         //System.out.println("Cand Welcome e afisat, questionNR= " + formdata.getQuestionNR());
@@ -86,7 +87,7 @@ public class WebController {
 
                 System.out.println("*******Answer primit cu formdata: " + formdata.getAnswer());
 
-        int[] orderOfQuestions = formdata.getQuizOrder();
+            int[] orderOfQuestions = formdata.getQuizOrder();
                 System.out.print("*******Ordinea intrebarilor primita cu formdata: ");
                 for (int i = 0; i < orderOfQuestions.length; i++) {
                     System.out.print(orderOfQuestions[i]);
@@ -130,14 +131,14 @@ public class WebController {
         }
 
         //Fac update la raspunsurile primite acum si le salvez in DB.
-        //System.out.println("Fac update la raspunsuri si salvez in DB sirul de raspunsuri. ");
         updateAnswers(formdata.getFirstname(), formdata.getLastname(), formdata.getAnswer(), startTime, orderOfQuestions);
 
         //dupa update reconstruiesc obiectul Candidate ca sa vad daca exista intrebari fara raspuns
         Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
         allAnswers = updatedCandidate.answers;
         startTime = updatedCandidate.getStartTime();
-        System.out.println("All answers, as in DB, pentru candidatul actual: " + allAnswers + ". Lungime: " + allAnswers.length());
+        System.out.println("***********All answers, as in DB, pentru candidatul actual: "
+                + allAnswers + ". Lungime: " + allAnswers.length());
 
         formdata.setStartTime(startTime);
 

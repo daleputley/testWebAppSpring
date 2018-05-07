@@ -65,7 +65,7 @@
                         <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
                             <p>
                                 <input type="hidden" th:field="*{answer}" checked="unchecked" th:value="rerun"/>
-                                <input type="hidden" th:field="*{questionNR}" th:value="*{row.index+1}"/>
+                                <input type="hidden" th:field="*{questionNR}" th:value="${row.index+1}"/>
                                 <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
                                 <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
                             </p>
