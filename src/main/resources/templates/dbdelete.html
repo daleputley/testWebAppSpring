@@ -1,18 +1,43 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <title>Tremend QA Quizz - Deleting data</title>
-    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" />
+    <title>Tremend QA Quizz</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- Bootstrap -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> </link>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </link>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1"> </meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </meta>
 </head>
 <body>
-<h1>Database deleted. </h1>
-<p><a href="/">Home.</a></p>
-<p><a href="/welcome">Start a new query.</a></p>
-
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Tremend QA Quiz</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="/admin">Home</a></li>
+            <li><a href="/welcome">Start a quiz</a></li>
+            <li><a href="/dbcontent">Quiz results</a></li>
+            <li class="active"><a href="/dbdelete">Delete database</a></li>
+        </ul>
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3" style="padding-bottom: 10%;">
+        </div>
+        <div class="col-sm-6" style="padding-bottom: 10%;">
+            <h1>Database deleted.</h1>
+            <!--<a href="/welcome" class="btn btn-primary" role="button">Start the test.</a>-->
+            <!--<a href="/dbcontent" class="btn btn-primary" role="button">See previous results.</a>-->
+            <!--<a href="/dbdelete" class="btn btn-primary" role="button">Delete database content.</a>-->
+        </div>
+        <div class="col-sm-3" style="padding-bottom: 10%;">
+        </div>
+    </div>
+</div>
 </body>
 </html>

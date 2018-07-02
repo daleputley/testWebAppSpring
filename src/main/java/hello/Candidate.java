@@ -1,7 +1,9 @@
 package hello;
+
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+
+import java.util.Date;
 
 import static hello.Config.QUERY_LENGTH;
 
@@ -13,38 +15,35 @@ public class Candidate {
 
     public String firstName;
     public String lastName;
-    public String answers="";
+    public int[] answers = new int[QUERY_LENGTH];
     int[] order = new int[QUERY_LENGTH];
 
-
-
-    Query query=new Query();
-    long startTime;
+    Query query = new Query();
+    Date startTime;
 
     //constructor simplu
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, String answers, long startTime, int[] order) {
+    public Candidate(String firstName, String lastName, Date startTime, int[] order) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.answers=answers;
-        this.startTime=startTime;
-        this.order=order;
+        this.startTime = startTime;
+        this.order = order;
+
+        //initializez variabila answers
+        for (int i = 0; i < QUERY_LENGTH; i++) {
+            answers[i] = 0;
+        }
     }
 
-    //adaug un raspuns la ce s-a adaugat pana acum
-    public void addAnswer (String newAnswer){
-        if (newAnswer==null) {newAnswer="0";}
-        //daca stringul nu e gol
-        System.out.println("Daca stringul nu e gol il incrementez ");
-        if (this.answers!="") {
-            this.answers+=newAnswer;
+    //fac update la answers
+    public void addAnswer(int index, Integer newAnswer) {
+
+        if ((newAnswer == null)) {
+            newAnswer = 0;
         }
-        //daca e gol
-        else {
-            this.answers=newAnswer;
-        }
+        this.answers[index] = newAnswer;
     }
 
     public String getId() {
@@ -71,17 +70,21 @@ public class Candidate {
         this.lastName = lastName;
     }
 
-    public String getAnswers() {
+    public int[] getAnswers() {
         return answers;
     }
 
-    public void setAnswers(String answers) {
+    public void setAnswers(int[] answers) {
         this.answers = answers;
     }
 
-    public long getStartTime() {return startTime; }
+    public Date getStartTime() {
+        return startTime;
+    }
 
-    public void setStartTime(long startTime) {this.startTime = startTime; }
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
 
     public int[] getOrder() {
         return order;

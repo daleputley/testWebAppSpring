@@ -12,20 +12,45 @@
     </meta>
 </head>
 <body>
-<div class="container-fluid">
-
-    <div class="row">
-        <h1>Welcome. </h1>
-        <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
-            <p><input type="text" th:field="*{firstname}" placeholder="First name"/></p>
-            <p><input type="text" th:field="*{lastname}" placeholder="Last name"/></p>
-            <p><input type="submit" value="Start yor quiz"/>
-                <input type="reset" value="Reset"/>
-            </p>
-        </form>
-        <a href="/dbcontent">See previous results.</a>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Tremend QA Quiz</a>
+        </div>
+        <!--<p class="navbar-text">-->
+        <!--<span th:text="*{formdata.firstname} "></span>-->
+        <!--<span th:text="*{formdata.lastname}"></span>-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--<span class="glyphicon glyphicon-time"></span>-->
+        <!--Starting time:-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--<span th:text="*{formdata.dateFormatted}"></span>-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--Remaining unanswered questions:-->
+        <!--<span th:text="${(unansweredQuestions)}"></span>-->
+        <!--</p>-->
     </div>
-
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4" style="padding-bottom: 10%;">
+        </div>
+        <div class="col-sm-4" style="padding-bottom: 10%;">
+            <h1>Welcome. </h1>
+            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+                <p><input type="text" th:field="*{firstname}" placeholder="First name" required="required"/></p>
+                <p><input type="text" th:field="*{lastname}" placeholder="Last name" required="required"/></p>
+                <p><input type="submit" class="btn btn-primary" value="Start yor quiz"/>
+                    <input type="reset" class="btn" value="Reset"/>
+                </p>
+            </form>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
 </div>
 </body>
 </html>

@@ -2,13 +2,15 @@ package hello;
 
 public class WebContent {
 
-        public int index=0;
-        public String link="<a href='#'>Primul link</a>";
-        public String answerStatus="not answered";
+    public int index = 0;
+    public String link = "" + "<a href='#'>Primul link</a>";
+    public String answerStatus = "not yet answered";
+    public String rowCss = "display:none;";
+    public String bootstrapClass;
 
-        //------------------------------Getters and Setters------------------------------
+    //------------------------------Getters and Setters------------------------------
 
-        public int getIndex() {
+    public int getIndex() {
         return index;
     }
 
@@ -30,5 +32,21 @@ public class WebContent {
 
     public void setAnswerStatus(String answerStatus) {
         this.answerStatus = answerStatus;
+    }
+
+    public String getRowCss() {
+        return rowCss;
+    }
+
+    public void setRowCss(String rowCss) {
+        this.rowCss = rowCss;
+    }
+
+    public String getBootstrapClass() {
+        return bootstrapClass;
+    }
+
+    public void setBootstrapClass(String bootstrapClass) {
+        this.bootstrapClass = bootstrapClass;
     }
 }

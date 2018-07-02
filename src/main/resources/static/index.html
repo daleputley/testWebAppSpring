@@ -1,13 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE HTML>
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Tremend QA Quizz</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    </link>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    </meta>
 </head>
 <body>
-<h1>Welcome to the Tremend QA Quizz.</h1>
-<p><a href="/welcome">Start the test.</a></p>
-<p><a href="/dbcontent">See previous results.</a></p>
-<p><a href="/dbdelete">Delete database content.</a></p>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Tremend QA Quiz</a>
+        </div>
+        <!--<p class="navbar-text">-->
+        <!--<span th:text="*{formdata.firstname} "></span>-->
+        <!--<span th:text="*{formdata.lastname}"></span>-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--<span class="glyphicon glyphicon-time"></span>-->
+        <!--Starting time:-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--<span th:text="*{formdata.dateFormatted}"></span>-->
+        <!--</p>-->
+        <!--<p class="navbar-text">-->
+        <!--Remaining unanswered questions:-->
+        <!--<span th:text="${(unansweredQuestions)}"></span>-->
+        <!--</p>-->
+    </div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-sm-4" style="padding-bottom: 10%;">
+        </div>
+        <div class="col-sm-4" style="padding-bottom: 10%;">
+            <h1>Welcome.</h1>
+         <a href="/welcome" class="btn btn-primary" role="button">Start the test</a>
+        </div>
+        <div class="col-sm-4">
+        </div>
+    </div>
+</div>
 </body>
 </html>
