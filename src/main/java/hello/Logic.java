@@ -16,18 +16,19 @@ public class Logic {
     }
 
     //analyses string and returns quiz results
-    public String evaluate(String results) {
+    public String evaluate(int[] results) {
         String mark = "0";
         int hits = 0;
         int percentage;
 
         for (int i = 0; i < hello.Config.answerList.size(); i++) {
-            if (results.substring(i, i + 1).equals(hello.Config.answerList.get(i))) {
+            int correctAnswer = Integer.parseInt(hello.Config.answerList.get(i));
+            if (results[i] == correctAnswer) {
                 hits++;
             }
         }
-        percentage = (int) (long) (hits * 100 / results.length());
-        mark = " " + Integer.toString(hits) + " out of " + results.length() + " - " + Integer.toString(percentage) + "%";
+        percentage = (int) (long) (hits * 100 / results.length);
+        mark = " " + Integer.toString(hits) + " out of " + results.length + " - " + Integer.toString(percentage) + "%";
         return mark;
     }
 
@@ -62,20 +63,35 @@ public class Logic {
         return randomOrder;
     }
 
-    public static ArrayList<WebContent> updateRows(String allAnswers, ArrayList<WebContent> rows) {
+    public static ArrayList<WebContent> updateRows(int[] allAnswers, ArrayList<WebContent> rows) {
         String status = "";
+        String style="";
+        String bootstrapClass;
         //parse string, if answer is equal to 0,
-        if (allAnswers.length() > 0) {
-            for (int i = 0; i < allAnswers.length(); i++) {
-                char c=allAnswers.charAt(i);
-                String s=Character.toString(c);
-                System.out.println("************************ Substring: "+s);
-                if (s.equals("0")) status = "not answered";
-                else status = "answered";
-                rows.get(i).setAnswerStatus(status);
-                System.out.println("************************ Row "+i+" updated to "+status);
+        for (int i = 0; i < allAnswers.length; i++) {
+            if (allAnswers[i] == 0) {
+                status = "not answered";
+                //style = "display:inline";
+                bootstrapClass="btn btn-info";
+            } else {
+                status = "answered";
+                //style = "display:none;";
+                bootstrapClass="btn btn-light";
             }
+            rows.get(i).setAnswerStatus(status);
+            rows.get(i).setRowCss(style);
+            rows.get(i).setBootstrapClass(bootstrapClass);
+            //rows.get(i).setIndex(i);
         }
         return rows;
+    }
+
+    public static int unansweredCount(int[] allAnswers) {
+        int unanswered = 0;
+        for (int i = 0; i < allAnswers.length; i++) {
+            if (allAnswers[i] == 0)
+                unanswered++;
+        }
+        return unanswered;
     }
 }

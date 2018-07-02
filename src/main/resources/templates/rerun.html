@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Tremend QA Quizz - Rerun</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </link>
@@ -12,60 +12,74 @@
     </meta>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <h2><span th:text="*{formdata.firstname} "> </span><span th:text=" *{formdata.lastname}"></span></h2>        <h1>Question <span th:text="*{formdata.currentQuestion}"></span></h1>
-        <h1>Question number <span th:text="*{formdata.currentQuestion}"></span> - previously unanswered</h1>
-        <h3>Question index: <span th:text="*{formdata.questionIndex}"></span></h3>
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Tremend QA Quiz</a>
+        </div>
+        <p class="navbar-text">
+            <span th:text="*{formdata.firstname} "></span>
+            <span th:text="*{formdata.lastname}"></span>
+        </p>
+        <p class="navbar-text">
+            <span class="glyphicon glyphicon-time"></span>
+            Starting time:
+        </p>
+        <p class="navbar-text">
+            <span th:text="*{formdata.dateFormatted}"></span>
+        </p>
+        <p class="navbar-text">
+            Remaining unanswered questions:
+            <span th:text="${(unansweredQuestions)}"></span>
+        </p>
     </div>
-
+</nav>
+<div class="container">
     <div class="row">
-        <div class="col-sm-8" style="padding:30px 50px;">
-            <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" style="width:50%;"/>
+        <div class="col-sm-6" style="padding-bottom: 10%;">
+            <!--<h1>Question number <span th:text="*{formdata.currentQuestion}"></span> - previously unanswered</h1>-->
+            <h3>Question <span th:text="*{(formdata.questionIndex+1)}"></span> - previously unanswered:</h3>
+            <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" class="img-responsive"/>
+        </div>
+        <div class="col-sm-6">
+            <h3>Your answer:</h3>
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
-                <p><input type="radio" th:field="*{answer}" th:checked="${flag}" th:value="1"/> 1.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="2"/> 2.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="3"/> 3.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="4"/> 4.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="5"/> 5.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="6"/> 6.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="7"/> 7.
-                    <input type="radio" th:field="*{answer}" checked="unchecked" th:value="8"/> 8.
+                <p>
+                    <input class="radio-inline" type="radio" th:field="*{answer}" th:checked="${flag}" th:value="1"
+                           required="required"/> 1.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="2"/> 2.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="3"/> 3.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="4"/> 4.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="5"/> 5.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="6"/> 6.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="7"/> 7.
+                    <input class="radio-inline" type="radio" th:field="*{answer}" checked="unchecked" th:value="8"/> 8.
                     <input type="hidden" th:field="*{questionIndex}" th:value="*{questionIndex}"/>
                     <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
                     <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
                 </p>
-                <p>
-                    <input type="submit" value="Submit"/>
-                    <input type="reset" value="Reset"/>
-                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn ">Reset</button>
             </form>
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
                 <input type="hidden" th:field="*{answer}" checked="unchecked" th:value="0"/>
                 <input type="hidden" th:field="*{questionIndex}" th:value="*{questionIndex}"/>
                 <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
                 <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
-                <p>
-                    <input type="submit" value="Answer later"/>
-                </p>
+                <p>or</p>
+                <button type="submit" class="btn btn">Skip</button>
+                <p>You can answer skipped questions a bit later.</p>
             </form>
-        </div>
 
-        <div class="col-sm-4" style="background-color:lavenderblush; padding:30px 50px;">
-            <table class="table">
-                <tr>    
-                    <th>Question</th>
-                    <th>STATUS</th>
-                    <th>LINK</th>
-                </tr>
+
+            <table class="table" th:style="${(formdata.tableCss)}">
                 <tr th:each="row : ${rows}">
-                    <td th:text="${(row.index+1)}">Onions</td>
-                    <td th:text="${row.answerStatus}">yes</td>
-                    <td>
+                    <td th:style="${(row.rowCss)}" th:text="${(row.index+1)}">Onions</td>
+                    <td th:style="${(row.rowCss)}">
                         <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
                             <p>
                                 <input type="hidden" th:field="*{answer}" checked="unchecked" th:value="rerun"/>
-                                <input type="hidden" th:field="*{questionIndex}" th:value="${row.index+1}"/>
+                                <input type="hidden" th:field="*{questionIndex}" th:value="${row.index}"/>
                                 <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
                                 <input type="hidden" th:field="*{lastname}" value="*{firstname}"/>
                             </p>
@@ -76,6 +90,7 @@
                     </td>
                 </tr>
             </table>
+
         </div>
     </div>
 </div>

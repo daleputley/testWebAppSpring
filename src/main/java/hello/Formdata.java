@@ -14,64 +14,138 @@ public class Formdata {
     private String firstname, lastname;
     private long startTime;
     private String startTimeString;
-    private int[] quizOrder=new int[QUERY_LENGTH];
-
+    private int[] quizOrder = new int[QUERY_LENGTH];
+    boolean rerun = false;
+    public String tableCss ="display:;";
     DateFormat formatter = new SimpleDateFormat("HH:mm");
     private String dateFormatted;
-
     //dynamic html
-    String divContent="" +
+    String divContent = "" +
             "<a href='#'>Primul link</a>" +
             "<a href='#'>Al doilea link</a>";
+    int unansweredCount;
 
-    //getters and setters for the data
-    public String getFirstname() {return firstname;}
-    public void setFirstname(String firstname) {this.firstname = firstname;}
 
-    public String getStartTimeString() {return startTimeString;}
-    public void setStartTimeString(String startTimeString) {this.startTimeString = startTimeString;}
+    //------------------------------------------- Getters and Setters ---------------------------------
 
-    public String getLastname() {return lastname;}
-    public void setLastname(String lastname){this.lastname = lastname;}
+
+    public int getUnansweredCount() {
+        return unansweredCount;
+    }
+
+    public void setUnansweredCount(int unansweredCount) {
+        this.unansweredCount = unansweredCount;
+    }
+
+    public String getTableCss() {
+        return tableCss;
+    }
+
+    public void setTableCss(String tableCss) {
+        this.tableCss = tableCss;
+    }
+
+    public boolean isRerun() {
+        return rerun;
+    }
+
+    public void setRerun(boolean rerun) {
+        this.rerun = rerun;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getStartTimeString() {
+        return startTimeString;
+    }
+
+    public void setStartTimeString(String startTimeString) {
+        this.startTimeString = startTimeString;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
 
     public int getQuestionIndex() {
         return questionIndex;
     }
+
     public void setQuestionIndex(int questionNR) {
         this.questionIndex = questionNR;
+
     }
 
     public String getAnswer() {
         return answer;
     }
-    public void setAnswer(String answer) {this.answer = answer;}
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
 
     public long getStartTime() {
         return startTime;
     }
-    public void setStartTime(long startTime) {this.startTime = startTime;
-        dateFormatted=formatter.format(startTime);
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
+        dateFormatted = formatter.format(startTime);
         System.out.println(startTime);
     }
 
-    public void incrementQuestionIndex(){
+    public void incrementQuestionIndex() {
         this.questionIndex++;
     }
 
-    public String getDateFormatted() {return dateFormatted;}
-    public void setDateFormatted(String dateFormatted) {this.dateFormatted = dateFormatted;
+    public String getDateFormatted() {
+        return dateFormatted;
     }
-    public void setQuizOrder(int[] quizOrder) {this.quizOrder = quizOrder;    }
-    public int[] getQuizOrder() {return quizOrder;}
 
-    public DateFormat getFormatter() {return formatter;}
-    public void setFormatter(DateFormat formatter) {this.formatter = formatter;}
+    public void setDateFormatted(String dateFormatted) {
+        this.dateFormatted = dateFormatted;
+    }
 
-    public int getCurrentQuestion() {return currentQuestion; }
-    public void setCurrentQuestion(int currentQuestion) {this.currentQuestion = currentQuestion;}
+    public void setQuizOrder(int[] quizOrder) {
+        this.quizOrder = quizOrder;
+    }
 
-    public String getDivContent() {return divContent; }
+    public int[] getQuizOrder() {
+        return quizOrder;
+    }
 
-    public void setDivContent(String divContent) {this.divContent = divContent; }
+    public DateFormat getFormatter() {
+        return formatter;
+    }
+
+    public void setFormatter(DateFormat formatter) {
+        this.formatter = formatter;
+    }
+
+    public int getCurrentQuestion() {
+        return currentQuestion;
+    }
+
+    public void setCurrentQuestion(int currentQuestion) {
+        this.currentQuestion = currentQuestion;
+    }
+
+    public String getDivContent() {
+        return divContent;
+    }
+
+    public void setDivContent(String divContent) {
+        this.divContent = divContent;
+    }
 }
 
