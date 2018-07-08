@@ -14,11 +14,11 @@ import java.util.List;
 
 import static hello.Config.QUERY_LENGTH;
 import static hello.Logic.unansweredCount;
-import static hello.Logic.updateRows;
+import static hello.Logic.updateJumpButtons;
 
 @Controller
 
-@SessionAttributes({"formdata", "rows"})
+@SessionAttributes({"formdata", "jumpButtons"})
 public class WebController {
 
     //instantiez candidate repository prin autowired
@@ -29,12 +29,12 @@ public class WebController {
     Date startTimeObj = new Date();
 
     @RequestMapping("admin")
-    public String adminPage(Model model){
+    public String adminPage(Model model) {
         return "admin";
     }
 
     @RequestMapping("thankyou")
-    public String thankyou(Model model){
+    public String thankyou(Model model) {
         return "thankyou";
     }
 
@@ -47,13 +47,13 @@ public class WebController {
         //construiesc un obiect formdata - va contine datele transmise prin formularul de intrebari
         Formdata formdata = new Formdata();
 
-        //construiesc obiect rows si il populez cu obiecte webcontent initiale;
-        List<WebContent> rows = new ArrayList<>();
+        //construiesc obiect jumpButtons si il populez cu obiecte webcontent initiale;
+        List<WebContent> jumpButtons = new ArrayList<>();
         for (int i = 0; i < QUERY_LENGTH; i++) {
             WebContent webContent = new WebContent();
             webContent.setIndex(i);
             webContent.setAnswerStatus("not answered");
-            rows.add(webContent);
+            jumpButtons.add(webContent);
         }
 
         //initializez contorul intrebarilor
@@ -71,16 +71,16 @@ public class WebController {
 
         //pun formdata in Model
         model.addAttribute("formdata", formdata);
-        model.addAttribute("rows", rows);
+        model.addAttribute("jumpButtons", jumpButtons);
         return "welcome";
     }
 
     //**************************************POST mapping - QUERY page**************************
 
     @PostMapping("/query")
-    public String greetingSubmit(@ModelAttribute("formdata") Formdata formdata,
-                                 @ModelAttribute("rows") ArrayList<WebContent> rows,
-                                 Model model) {
+    public String queryController(@ModelAttribute("formdata") Formdata formdata,
+                                  @ModelAttribute("jumpButtons") ArrayList<WebContent> jumpButtons,
+                                  Model model) {
 
         //numele default al paginii afisate
         String page = "query";
@@ -88,27 +88,32 @@ public class WebController {
         int[] orderOfQuestions = formdata.getQuizOrder();
 
         System.out.println("********************** POST Query triggered ********************");
-          System.out.print("----------------------Preset order of questions: ");
+        System.out.print("----------------------Preset order of questions: ");
         printArrayValues(orderOfQuestions);
-        System.out.println("----------------------Question index set to " + formdata.getQuestionIndex());
+        System.out.println("+++++++++++++++++++++++formdata.isRerun=" + formdata.isRerun());
+        System.out.println("----------------------formdata.getQuestionIndex=" + formdata.getQuestionIndex());
         System.out.println("+++++++++++++++++++++++formdata.getAnswer=" + formdata.getAnswer());
-        System.out.println("+++++++++++++++++++++++formdata.getFirstname=" + formdata.getFirstname());
-        System.out.println("+++++++++++++++++++++++formdata.getLastname=" + formdata.getLastname());
+        System.out.println("+++++++++++++++++++++++jumpbuttons array size: =" + jumpButtons.size());
+
         //Fac update la raspunsurile primite acum cu formdata si le salvez in DB.
+        //daca nu s-a apasat skip sau jump
         updateAnswers(formdata);
 
-        //setez indexul urmatoarei intrebari
-        //daca nu am parcurs macar o data toate intrebarile incrementez indexul intrebarii
-        if ((formdata.getQuestionIndex() < QUERY_LENGTH) && (formdata.getAnswer() != null)) {
+        //if user did not press "jump"
+        if (formdata.getAnswer() != "-2"){
             formdata.incrementQuestionIndex();
             System.out.println("+++++++++++++++++++++++++question index incremented to: " + formdata.getQuestionIndex());
         }
-
-        //daca indexul intrebarilor nu a ajuns la limita stabilita prin QUERY_LENGTH
-        if (formdata.getQuestionIndex() < QUERY_LENGTH && !formdata.isRerun()) {
-            //stabilesc intrebarea care va fi afisata
+        else {
             formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionIndex())]);
         }
+
+
+//        //daca indexul intrebarilor nu a ajuns la limita stabilita prin QUERY_LENGTH
+//        if (formdata.getQuestionIndex() < QUERY_LENGTH && !formdata.isRerun()) {
+//            //stabilesc intrebarea care va fi afisata
+//            formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionIndex())]);
+//        }
 
         //cand ajung prima data la lungimea formularului, setez rerun=true
         if (formdata.getQuestionIndex() == QUERY_LENGTH) {
@@ -134,23 +139,16 @@ public class WebController {
             formdata.setCurrentQuestion(orderOfQuestions[positionOfFirstZero]);
             //salvez noul formdata in obiectul Model
             model.addAttribute("formdata", formdata);
-         //   page = "rerun";
         }
 
-        //daca toate intrebarile au primit raspuns pregatesc pagina de rezultate
-        if (getIndexOfFirstZero(allAnswers) == -1) {
-            System.out.print("---------------------Answers saved in DB:");
-            printArrayValues(allAnswers);
-            System.out.println("------index of first zero:" + getIndexOfFirstZero(allAnswers));
-            page = "thankyou";
-        }
-
-        //fac update la ROWS, pe baza raspunsurilor date pana acum
-        rows = updateRows(allAnswers, rows);
-        int unansweredQuestions=unansweredCount(allAnswers);
+        //fac update la jumpButtons, pe baza raspunsurilor date pana acum
+        System.out.println("allAnswers array: ");
+        printArrayValues(allAnswers);
+        jumpButtons = updateJumpButtons(allAnswers, jumpButtons);
+        int unansweredQuestions = unansweredCount(allAnswers);
 
         model.addAttribute("allAnswers", allAnswers);
-        model.addAttribute("rows", rows);
+        model.addAttribute("jumpButtons", jumpButtons);
         model.addAttribute("unansweredQuestions", unansweredQuestions);
         return page;
     }
@@ -195,20 +193,20 @@ public class WebController {
             System.out.println(newPerson.getFirstName() + " has been created.");
             System.out.print("His answers so far:");
             printArrayValues(newPerson.answers);
+        //daca persoana exista
         } else {
-            //citesc raspunsurile lui anterioare
+            //citesc raspunsurile anterioare
             int[] allAnswers = person.answers;
             //fac update la raspunsuri
-            if (formdata.getAnswer().equals("")) formdata.setAnswer("0");
-            allAnswers[formdata.getQuestionIndex()] = Integer.parseInt(formdata.getAnswer());
+            //daca raspunsul nu este egal cu -1 (skip) sau -2 (jump)
+            if (!formdata.getAnswer().equals("-1") && !formdata.getAnswer().equals("-2") )
+                allAnswers[formdata.getQuestionIndex()] = Integer.parseInt(formdata.getAnswer());
             person.setAnswers(allAnswers);
-            System.out.print(" All answers now updated to:");
             printArrayValues(allAnswers);
             repository.save(person);
-            System.out.print("----------------------All answers saved so far: ");
+            System.out.print("----------------------All answers now updated to: ");
             printArrayValues(person.answers);
         }
-
     }
 
     public int getIndexOfFirstZero(int[] allAnswers) {

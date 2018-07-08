@@ -63,7 +63,7 @@ public class Logic {
         return randomOrder;
     }
 
-    public static ArrayList<WebContent> updateRows(int[] allAnswers, ArrayList<WebContent> rows) {
+    public static ArrayList<WebContent> updateJumpButtons(int[] allAnswers, ArrayList<WebContent> jumpButtons) {
         String status = "";
         String style="";
         String bootstrapClass;
@@ -78,12 +78,11 @@ public class Logic {
                 //style = "display:none;";
                 bootstrapClass="btn btn-light";
             }
-            rows.get(i).setAnswerStatus(status);
-            rows.get(i).setRowCss(style);
-            rows.get(i).setBootstrapClass(bootstrapClass);
-            //rows.get(i).setIndex(i);
+            jumpButtons.get(i).setAnswerStatus(status);
+            jumpButtons.get(i).setRowCss(style);
+            jumpButtons.get(i).setBootstrapClass(bootstrapClass);
         }
-        return rows;
+        return jumpButtons;
     }
 
     public static int unansweredCount(int[] allAnswers) {
