@@ -93,7 +93,6 @@ public class WebController {
         System.out.println("+++++++++++++++++++++++formdata.isRerun=" + formdata.isRerun());
         System.out.println("----------------------formdata.getQuestionIndex=" + formdata.getQuestionIndex());
         System.out.println("+++++++++++++++++++++++formdata.getAnswer=" + formdata.getAnswer());
-        //System.out.println("+++++++++++++++++++++++jumpbuttons array size: =" + jumpButtons.size());
 
         //Fac update la raspunsurile primite acum cu formdata si le salvez in DB.
         //daca nu s-a apasat skip sau jump
@@ -149,9 +148,8 @@ public class WebController {
         }
 
         //fac update la jumpButtons, pe baza raspunsurilor date pana acum
-        System.out.println("allAnswers array: ");
-        printArrayValues(allAnswers);
-        jumpButtons = updateJumpButtons(allAnswers, jumpButtons);
+        System.out.println("allAnswers array: "); printArrayValues(allAnswers);
+        jumpButtons = updateJumpButtons(allAnswers, formdata.getQuestionIndex(), jumpButtons);
         int unansweredQuestions = unansweredCount(allAnswers);
 
         model.addAttribute("allAnswers", allAnswers);

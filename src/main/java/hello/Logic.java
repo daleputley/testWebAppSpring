@@ -63,7 +63,7 @@ public class Logic {
         return randomOrder;
     }
 
-    public static ArrayList<WebContent> updateJumpButtons(int[] allAnswers, ArrayList<WebContent> jumpButtons) {
+    public static ArrayList<WebContent> updateJumpButtons(int[] allAnswers, int questionIndex, ArrayList<WebContent> jumpButtons) {
         String status = "";
         String style="";
         String bootstrapClass;
@@ -71,13 +71,12 @@ public class Logic {
         for (int i = 0; i < allAnswers.length; i++) {
             if (allAnswers[i] == 0) {
                 status = "not answered";
-                //style = "display:inline";
                 bootstrapClass="btn btn-primary";
             } else {
                 status = "answered";
-                //style = "display:none;";
                 bootstrapClass="btn btn-light";
             }
+            if (questionIndex==i) bootstrapClass=bootstrapClass+" active current";
             jumpButtons.get(i).setAnswerStatus(status);
             jumpButtons.get(i).setRowCss(style);
             jumpButtons.get(i).setBootstrapClass(bootstrapClass);
