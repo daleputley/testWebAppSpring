@@ -10,7 +10,11 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        .current {text-decoration: underline; border-top: 1px solid #333339 !important; border-bottom: 1px solid #333339 !important;}
+        .current {
+            text-decoration: underline;
+            border-top: 1px solid #333339 !important;
+            border-bottom: 1px solid #333339 !important;
+        }
     </style>
     </meta>
 </head>
@@ -31,10 +35,9 @@
         <p class="navbar-text">
             <span th:text="*{formdata.dateFormatted}"></span>
         </p>
-        <p class="navbar-text">
-            Remaining questions:
-            <span th:text="${(unansweredQuestions)}"></span>
-        </p>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="/thankyou"><span class="glyphicon glyphicon-log-out"></span> Save and quit</a></li>
+        </ul>
     </div>
 </nav>
 <div class="container">
@@ -47,62 +50,78 @@
             <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" class="img-responsive"/>
         </div>
         <div class="col-sm-6">
+
             <h3>Your answer:</h3>
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
                 <p>
                     <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="1"
                            required="required"/> 1.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="2"/> 2.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="3"/> 3.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="4"/> 4.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="5"/> 5.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="6"/> 6.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="7"/> 7.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="8"/> 8.
-                    <input type="hidden" class="radio-inline" th:field="*{questionIndex}" th:value="*{questionIndex}"/>
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="2"/>
+                    2.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="3"/>
+                    3.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="4"/>
+                    4.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="5"/>
+                    5.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="6"/>
+                    6.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="7"/>
+                    7.
+                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="8"/>
+                    8.
+                    <input type="hidden" class="radio-inline" th:field="*{questionIndex}"
+                           th:value="*{questionIndex}"/>
                 </p>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="reset" class="btn">Reset</button>
             </form>
+
             <div style="clear:both; height:20px;"></div>
 
             <!--previous question button -->
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
-                  style="display:inline; margin-top:70px;">
+                  style="display:inline;">
                 <input type="hidden" name="answer" th:value="previous"/>
-                <button type="submit" class="btn" style="margin-bottom: 10px"> &#8678; Previous</button>
+                <button type="submit" class="btn"> &#8678; Previous</button>
             </form>
 
             <!--skip question button -->
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post" style="display:inline;">
                 <input type="hidden" name="answer" th:value="skip"/>
-                <button type="submit" class="btn" style="margin-bottom: 10px">Skip &#8680;</button>
+                <button type="submit" class="btn">Skip &#8680;</button>
             </form>
 
-            <h3 style="margin-top:70px;">Remaining questions:
-                <mark><span th:text="${(unansweredQuestions)}"></span></mark>
-            </h3>
-
+            <div style="clear:both; height:25px;"></div>
 
             <!--question selection buttons-->
-            <span th:each="jumpButton : ${jumpButtons}">
-                     <span th:style="${(jumpButton.rowCss)}">
-                        <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
-                              style="float:left;" role="form">
-                                <input type="hidden" name="questionIndex" th:value="${jumpButton.index}"/>
-                                <input type="hidden" name="answer" th:value="jump"/>
-                                <button type="submit" th:class="${(jumpButton.bootstrapClass)}"
-                                        style="margin-right:5px;" th:value="${jumpButton.index+1}">
-                                    <span th:text="${jumpButton.index+1}"></span>
-                                </button>
-                        </form>
-                     </span>
-            </span>
-            <div style="clear:both; height:20px;"></div>
+                <span th:each="jumpButton : ${jumpButtons}">
+                         <span th:style="${(jumpButton.rowCss)}">
+                            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
+                                  style="float:left;" role="form">
+                                    <input type="hidden" name="questionIndex" th:value="${jumpButton.index}"/>
+                                    <input type="hidden" name="answer" th:value="jump"/>
+                                    <button type="submit" th:class="${(jumpButton.bootstrapClass)}"
+                                            style="margin-right:5px;" th:value="${jumpButton.index+1}">
+                                        <span th:text="${jumpButton.index+1}"></span>
+                                    </button>
+                            </form>
+                         </span>
+                </span>
 
-            <!--quit button -->
-            <a href="/thankyou" class="btn btn-primary" role="button" style="clear:both">Save and quit</a>
-
+            <div style="clear:both; height:120px;"></div>
+            <h4>Remaining questions:
+                <span class="label label-default" th:text="${(unansweredQuestions)}"></span>
+            </h4>
+            <p>
+                <small>Navigate freely through questions using <code> Previous</code>, <code>Skip</code> or
+                    <code>Number </code>
+                    buttons.
+                </small>
+            </p>
+            <p>
+                <small>When finished, click <code>Save and quit</code> at the top-right corner.</small>
+            </p>
         </div>
     </div>
     <div class="row">

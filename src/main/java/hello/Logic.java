@@ -71,12 +71,12 @@ public class Logic {
         for (int i = 0; i < allAnswers.length; i++) {
             if (allAnswers[i] == 0) {
                 status = "not answered";
-                bootstrapClass="btn btn-primary";
+                bootstrapClass="btn btn-primary btn-sm";
             } else {
                 status = "answered";
-                bootstrapClass="btn btn-light";
+                bootstrapClass="btn btn-light btn-sm";
             }
-            if (questionIndex==i) bootstrapClass=bootstrapClass+" active current";
+            if (questionIndex==i) bootstrapClass=bootstrapClass.replace("btn-sm", " ")+" active ";
             jumpButtons.get(i).setAnswerStatus(status);
             jumpButtons.get(i).setRowCss(style);
             jumpButtons.get(i).setBootstrapClass(bootstrapClass);
