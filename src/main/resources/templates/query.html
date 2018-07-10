@@ -45,7 +45,6 @@
         <div class="col-sm-6" style="padding-bottom: 10%;">
             <h3>Question
                 <mark><span th:text="*{(formdata.questionIndex+1)}"></span></mark>
-                :
             </h3>
             <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" class="img-responsive"/>
         </div>
@@ -54,23 +53,31 @@
             <h3>Your answer:</h3>
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
                 <p>
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="1"
-                           required="required"/> 1.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="2"/>
-                    2.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="3"/>
-                    3.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="4"/>
-                    4.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="5"/>
-                    5.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="6"/>
-                    6.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="7"/>
-                    7.
-                    <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="8"/>
-                    8.
-                    <input type="hidden" class="radio-inline" th:field="*{questionIndex}"
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="1"
+                                                       required="required"/> 1.</label>
+                    <label class="radio-inline"><input type="radio" class="radio-inline" th:field="*{answer}"
+                                                       checked="unchecked" th:value="2"/>
+                        2.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="3"/>
+                        3.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="4"/>
+                        4.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="5"/>
+                        5.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="6"/>
+                        6.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="7"/>
+                        7.</label>
+                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
+                                                       th:value="8"/>
+                        8.</label>
+                    <input type="hidden" th:field="*{questionIndex}"
                            th:value="*{questionIndex}"/>
                 </p>
                 <button type="submit" class="btn btn-primary">Submit</button>
