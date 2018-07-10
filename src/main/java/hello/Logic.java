@@ -72,7 +72,7 @@ public class Logic {
             if (allAnswers[i] == 0) {
                 status = "not answered";
                 //style = "display:inline";
-                bootstrapClass="btn btn-info";
+                bootstrapClass="btn btn-primary";
             } else {
                 status = "answered";
                 //style = "display:none;";

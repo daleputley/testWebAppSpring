@@ -17,12 +17,9 @@ public class Formdata {
     private int[] quizOrder = new int[QUERY_LENGTH];
     boolean rerun = false;
     public String tableCss ="display:;";
+    public String buttonChecked="checked";
     DateFormat formatter = new SimpleDateFormat("HH:mm");
     private String dateFormatted;
-    //dynamic html
-    String divContent = "" +
-            "<a href='#'>Primul link</a>" +
-            "<a href='#'>Al doilea link</a>";
     int unansweredCount;
 
 
@@ -108,6 +105,10 @@ public class Formdata {
         this.questionIndex++;
     }
 
+    public void decrementQuestionIndex() {
+        this.questionIndex--;
+    }
+
     public String getDateFormatted() {
         return dateFormatted;
     }
@@ -140,12 +141,5 @@ public class Formdata {
         this.currentQuestion = currentQuestion;
     }
 
-    public String getDivContent() {
-        return divContent;
-    }
-
-    public void setDivContent(String divContent) {
-        this.divContent = divContent;
-    }
 }
 

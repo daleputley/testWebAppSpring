@@ -93,27 +93,34 @@ public class WebController {
         System.out.println("+++++++++++++++++++++++formdata.isRerun=" + formdata.isRerun());
         System.out.println("----------------------formdata.getQuestionIndex=" + formdata.getQuestionIndex());
         System.out.println("+++++++++++++++++++++++formdata.getAnswer=" + formdata.getAnswer());
-        System.out.println("+++++++++++++++++++++++jumpbuttons array size: =" + jumpButtons.size());
+        //System.out.println("+++++++++++++++++++++++jumpbuttons array size: =" + jumpButtons.size());
 
         //Fac update la raspunsurile primite acum cu formdata si le salvez in DB.
         //daca nu s-a apasat skip sau jump
         updateAnswers(formdata);
 
-        //if user did not press "jump"
-        if (formdata.getAnswer() != "-2"){
-            formdata.incrementQuestionIndex();
-            System.out.println("+++++++++++++++++++++++++question index incremented to: " + formdata.getQuestionIndex());
-        }
-        else {
-            formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionIndex())]);
+        //increment index only if this is not the first question...
+        if (formdata.getAnswer() != null) {
+            // ...AND if user did not press "jump" nor "previous"
+            // ...AND if query end has not been reached
+            //... increment question index
+            if (!formdata.getAnswer().equals("jump")
+                    && !formdata.getAnswer().equals("previous")
+                    && formdata.getQuestionIndex() < (QUERY_LENGTH - 1)) {
+                formdata.incrementQuestionIndex();
+                System.out.println("Question index incremented to: " + formdata.getQuestionIndex());
+            }
+            //but if user has pressed "previous", decrement question index
+            if (formdata.getAnswer().equals("previous") && formdata.getQuestionIndex() > 0) {
+                formdata.decrementQuestionIndex();
+                System.out.println("Question index decremented to: " + formdata.getQuestionIndex());
+            }
         }
 
-
-//        //daca indexul intrebarilor nu a ajuns la limita stabilita prin QUERY_LENGTH
-//        if (formdata.getQuestionIndex() < QUERY_LENGTH && !formdata.isRerun()) {
-//            //stabilesc intrebarea care va fi afisata
-//            formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionIndex())]);
-//        }
+        //setting current question as the "n"-th question in the pre-established order,
+        //where "n" is formdata.getQuestionIndex()
+        formdata.setCurrentQuestion(orderOfQuestions[(formdata.getQuestionIndex())]);
+        System.out.println("+++++++++++++++++++++++++question index is at  " + formdata.getQuestionIndex());
 
         //cand ajung prima data la lungimea formularului, setez rerun=true
         if (formdata.getQuestionIndex() == QUERY_LENGTH) {
@@ -123,12 +130,12 @@ public class WebController {
         //salvez noul formdata in obiectul Model
         model.addAttribute("formdata", formdata);
 
-        //golesc setAnswer ca sa nu se bifeze radiobuttonul intrebarii anterioare
-        formdata.setAnswer(null);
-
         //dupa update reconstruiesc obiectul Candidate ca sa vad daca exista intrebari fara raspuns
         Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
         int[] allAnswers = updatedCandidate.answers;
+
+        //setez setAnswer la raspunsul intrebarii actuale
+        formdata.setAnswer(Integer.toString(allAnswers[formdata.getQuestionIndex()]));
 
         //daca am trecut prin toate intrebarile, si este vreuna cu raspuns 0 nu voi afisa rezultatele,
         // ci voi reafisa intrebarile fara raspuns
@@ -193,16 +200,16 @@ public class WebController {
             System.out.println(newPerson.getFirstName() + " has been created.");
             System.out.print("His answers so far:");
             printArrayValues(newPerson.answers);
-        //daca persoana exista
+            //daca persoana exista
         } else {
             //citesc raspunsurile anterioare
             int[] allAnswers = person.answers;
-            //fac update la raspunsuri
-            //daca raspunsul nu este egal cu -1 (skip) sau -2 (jump)
-            if (!formdata.getAnswer().equals("-1") && !formdata.getAnswer().equals("-2") )
+            //if the answer is not "skip" nor "jump" nor "previous"
+            if (!formdata.getAnswer().equals("skip")
+                    && !formdata.getAnswer().equals("jump")
+                    && !formdata.getAnswer().equals("previous"))
                 allAnswers[formdata.getQuestionIndex()] = Integer.parseInt(formdata.getAnswer());
             person.setAnswers(allAnswers);
-            printArrayValues(allAnswers);
             repository.save(person);
             System.out.print("----------------------All answers now updated to: ");
             printArrayValues(person.answers);
