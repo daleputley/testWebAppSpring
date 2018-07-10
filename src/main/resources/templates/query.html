@@ -40,7 +40,10 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-6" style="padding-bottom: 10%;">
-            <h3>Question <span th:text="*{(formdata.questionIndex+1)}"></span>:</h3>
+            <h3>Question
+                <mark><span th:text="*{(formdata.questionIndex+1)}"></span></mark>
+                :
+            </h3>
             <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" class="img-responsive"/>
         </div>
         <div class="col-sm-6">
@@ -57,44 +60,52 @@
                     <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="7"/> 7.
                     <input type="radio" class="radio-inline" th:field="*{answer}" checked="unchecked" th:value="8"/> 8.
                     <input type="hidden" class="radio-inline" th:field="*{questionIndex}" th:value="*{questionIndex}"/>
-                    <input type="hidden" class="radio-inline" th:field="*{firstname}" value="*{firstname}"/>
-                    <input type="hidden" class="radio-inline" th:field="*{lastname}" value="*{firstname}"/>
                 </p>
                 <button type="submit" class="btn btn-primary">Submit</button>
                 <button type="reset" class="btn">Reset</button>
             </form>
-            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post" style="display:inline;">
-                <input type="hidden" th:field="*{answer}" th:attr="name='skip value'" value="0"/>
-                <input type="hidden" th:field="*{questionIndex}" th:value="*{questionIndex}"/>
-                <input type="hidden" th:field="*{firstname}" value="*{firstname}"/>
-                <input type="hidden" th:field="*{lastname}" value="*{lastname}"/>
-                <p style="margin-top: 10px">or</p>
-                <button type="submit" class="btn" style="margin-bottom: 10px">Skip</button>
-                <p>You can answer skipped questions a bit later.</p>
-            </form>
-            <h3 style="margin-top:70px;">Remaining questions: <span th:text="${(unansweredQuestions)}"></span></h3>
+            <div style="clear:both; height:20px;"></div>
 
-            <span th:each="row : ${rows}">
-                     <span th:style="${(row.rowCss)}">
+            <!--previous question button -->
+            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
+                  style="display:inline; margin-top:70px;">
+                <input type="hidden" name="answer" th:value="previous"/>
+                <button type="submit" class="btn" style="margin-bottom: 10px"> &#8678; Previous</button>
+            </form>
+
+            <!--skip question button -->
+            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post" style="display:inline;">
+                <input type="hidden" name="answer" th:value="skip"/>
+                <button type="submit" class="btn" style="margin-bottom: 10px">Skip &#8680;</button>
+            </form>
+
+            <h3 style="margin-top:70px;">Remaining questions:
+                <mark><span th:text="${(unansweredQuestions)}"></span></mark>
+            </h3>
+
+
+            <!--question selection buttons-->
+            <span th:each="jumpButton : ${jumpButtons}">
+                     <span th:style="${(jumpButton.rowCss)}">
                         <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
-                              style="float:left;">
-                            <p>
-                                <input type="text" th:field="*{answer}" value="10" />
-                                <input th:type="text" th:field="*{questionIndex}" th:value="${row.index}" />
-                                <input type="hidden" th:field="*{firstname}"/>
-                                <input type="hidden" th:field="*{lastname}" th:value="*{lastname}"/>
-                            </p>
-                            <p>
-                                <input type="submit" th:class="${(row.bootstrapClass)}"
-                                       style="margin-right:5px;" th:value="${row.index+1}"/>
-    </p>
-    </form>
-    </span>
-    </span>
+                              style="float:left;" role="form">
+                                <input type="hidden" name="questionIndex" th:value="${jumpButton.index}"/>
+                                <input type="hidden" name="answer" th:value="jump"/>
+                                <button type="submit" th:class="${(jumpButton.bootstrapClass)}"
+                                        style="margin-right:5px;" th:value="${jumpButton.index+1}">
+                                    <span th:text="${jumpButton.index+1}"></span>
+                                </button>
+                        </form>
+                     </span>
+            </span>
+            <div style="clear:both; height:20px;"></div>
+
+            <!--quit button -->
+            <a href="/thankyou" class="btn btn-primary" role="button" style="clear:both">Save and quit</a>
+
         </div>
     </div>
     <div class="row">
-        <!--<p style="text-align: center">Copyright 2018</p>-->
     </div>
 </div>
 </body>
