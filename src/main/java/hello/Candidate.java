@@ -12,12 +12,10 @@ public class Candidate {
 
     @Id
     public String id;
-
     public String firstName;
     public String lastName;
     public int[] answers = new int[QUERY_LENGTH];
     int[] order = new int[QUERY_LENGTH];
-
     Query query = new Query();
     Date startTime;
 
@@ -39,12 +37,14 @@ public class Candidate {
 
     //fac update la answers
     public void addAnswer(int index, Integer newAnswer) {
-
         if ((newAnswer == null)) {
             newAnswer = 0;
         }
         this.answers[index] = newAnswer;
     }
+
+
+    // SETTERS and GETTERS
 
     public String getId() {
         return id;

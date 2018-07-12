@@ -2,6 +2,7 @@ package hello;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static hello.Config.QUERY_LENGTH;
 
@@ -12,19 +13,68 @@ public class Formdata {
     private int currentQuestion;
     private String answer;
     private String firstname, lastname;
-    private long startTime;
+    private Date startTime;
     private String startTimeString;
     private int[] quizOrder = new int[QUERY_LENGTH];
     boolean rerun = false;
-    public String tableCss ="display:;";
-    public String buttonChecked="checked";
+    private String tableCss = "display:;";
     DateFormat formatter = new SimpleDateFormat("HH:mm");
-    private String dateFormatted;
+    private String startDateFormatted;
+    private int remainingMinutes;
+    public String timerCss = "";
     int unansweredCount;
+
+
+    public void updateQuestionIndex(){
+        //increment index only if this is not the first question...
+        if (getAnswer() != null) {
+            // ...AND if user did not press "jump" nor "previous"
+            // ...AND if query end has not been reached
+            //... increment question index
+            if (!getAnswer().equals("jump")
+                    && !getAnswer().equals("previous")
+                    && getQuestionIndex() < (QUERY_LENGTH - 1)) {
+                incrementQuestionIndex();
+                System.out.println("Question index incremented to: " + getQuestionIndex());
+            }
+            //but if user has pressed "previous", decrement question index
+            if (getAnswer().equals("previous") && getQuestionIndex() > 0) {
+                decrementQuestionIndex();
+                System.out.println("Question index decremented to: " + getQuestionIndex());
+            }
+        }
+    }
+
+    public int getRemainingTime(Date startTime){
+        setStartTime(startTime);
+        System.out.println("-----------------------------start time: " + getStartDateFormatted());
+        Date currenttime = new Date();
+        int duration = (int) ((currenttime.getTime() - startTime.getTime()) / 1000);
+        int remaining = (60 * Config.TIME_MINUTES) - duration;
+        setRemainingMinutes(remaining / 60);
+        System.out.println("-----------------------------duration minutes: " + (duration / 60));
+        System.out.println("-----------------------------remaining: " + remaining / 60);
+        System.out.println("-----------------------------duration: " + duration);
+        return remaining;
+    }
+
+
 
 
     //------------------------------------------- Getters and Setters ---------------------------------
 
+    public int getRemainingMinutes() {
+        return remainingMinutes;
+    }
+
+    public void setRemainingMinutes(int remainingMinutes) {
+        this.remainingMinutes = remainingMinutes;
+        if (remainingMinutes < 5) this.timerCss = "redText";
+    }
+
+    public String getStartDateFormatted() {
+        return startDateFormatted;
+    }
 
     public int getUnansweredCount() {
         return unansweredCount;
@@ -78,10 +128,7 @@ public class Formdata {
         return questionIndex;
     }
 
-    public void setQuestionIndex(int questionNR) {
-        this.questionIndex = questionNR;
-
-    }
+    public void setQuestionIndex(int questionNR) {this.questionIndex = questionNR;}
 
     public String getAnswer() {
         return answer;
@@ -91,14 +138,13 @@ public class Formdata {
         this.answer = answer;
     }
 
-    public long getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(long startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
-        dateFormatted = formatter.format(startTime);
-        System.out.println(startTime);
+        this.startDateFormatted = new SimpleDateFormat("HH:mm").format(startTime);
     }
 
     public void incrementQuestionIndex() {
@@ -107,14 +153,6 @@ public class Formdata {
 
     public void decrementQuestionIndex() {
         this.questionIndex--;
-    }
-
-    public String getDateFormatted() {
-        return dateFormatted;
-    }
-
-    public void setDateFormatted(String dateFormatted) {
-        this.dateFormatted = dateFormatted;
     }
 
     public void setQuizOrder(int[] quizOrder) {

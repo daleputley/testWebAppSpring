@@ -15,6 +15,9 @@
             border-top: 1px solid #333339 !important;
             border-bottom: 1px solid #333339 !important;
         }
+        .redText {color:red;}
+
+
     </style>
     </meta>
 </head>
@@ -30,10 +33,12 @@
         </p>
         <p class="navbar-text">
             <span class="glyphicon glyphicon-time"></span>
-            Starting time:
+            Starting time: <span th:text="*{formdata.startDateFormatted}"></span>
         </p>
         <p class="navbar-text">
-            <span th:text="*{formdata.dateFormatted}"></span>
+            <span class="glyphicon glyphicon-time"></span>
+            Remaining: <span th:class="${(formdata.timerCss)}" th:text="*{formdata.remainingMinutes}"></span>
+            <span th:class="${(formdata.timerCss)}">minutes </span>
         </p>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/thankyou"><span class="glyphicon glyphicon-log-out"></span> Save and quit</a></li>
@@ -102,7 +107,7 @@
             <div style="clear:both; height:25px;"></div>
 
             <!--question selection buttons-->
-                <span th:each="jumpButton : ${jumpButtons}">
+            <span th:each="jumpButton : ${jumpButtons}">
                          <span th:style="${(jumpButton.rowCss)}">
                             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
                                   style="float:left;" role="form">
@@ -121,8 +126,8 @@
                 <span class="label label-default" th:text="${(unansweredQuestions)}"></span>
             </h4>
             <p>
-                <small>Navigate freely through questions using <code> Previous</code>, <code>Skip</code> or
-                    <code>Number </code>
+                <small>Navigate freely through questions using <code>Previous</code>, <code>Skip</code> or
+                    <code>Number</code>
                     buttons.
                 </small>
             </p>

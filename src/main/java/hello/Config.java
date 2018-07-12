@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Config {
     public static int TOTAL_QUESTIONS = 5;
+    public static int TIME_MINUTES = 6;
     public static int QUERY_LENGTH = 5;
     public static List<String> answerList = new ArrayList<String>() {{
         add("4");
