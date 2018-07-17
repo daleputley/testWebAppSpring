@@ -1,6 +1,8 @@
 package hello;
 
+import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -8,12 +10,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static hello.Config.TIME_MINUTES;
 import static hello.Tools.unansweredCount;
 import static hello.Tools.updateJumpButtons;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Controller
 @SessionAttributes({"formdata", "jumpButtons"})
@@ -38,6 +48,7 @@ public class WebController {
     @RequestMapping("welcome")
     public String greetingForm(Model model) {
 
+        String page = "welcome";
         //build formdata object which stores and handles all form data
         Formdata formdata = new Formdata();
 
@@ -55,13 +66,13 @@ public class WebController {
         model.addAttribute("jumpButtons", jumpButtons);
 
         //return welcome page
-        return "welcome";
+        return page;
     }
 
     @PostMapping("/query")
     public String queryController(@ModelAttribute("formdata") Formdata formdata,
                                   @ModelAttribute("jumpButtons") ArrayList<WebContent> jumpButtons,
-                                  Model model) {
+                                  Model model) throws IOException {
 
         //default html template to be displayed
         String page = "query";
@@ -70,18 +81,48 @@ public class WebController {
         //update answers array based on formdata, and store it in Mongo DB.
         updateAnswers(formdata);
 
-        //setting current question as the "n"-th question in the pre-established order,
+        //setting current question as the "n"-th question of the pre-established order,
         //where "n" is formdata.getQuestionIndex()
         int[] orderOfQuestions = formdata.getQuizOrder();
         int currentQuestion = orderOfQuestions[(formdata.getQuestionIndex())];
-        formdata.setCurrentQuestion(currentQuestion);
-        System.out.println("+++++++++++++++++++++++++question index is at  " + formdata.getQuestionIndex());
+
+        //TODO improve selection of matching filename
+        // get filename based on question index
+        File dir = new ClassPathResource("/static/questions").getFile();
+        File[] matchingFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith(Integer.toString(currentQuestion));
+            }
+        });
+        File currentQuestionFile=matchingFiles[0];
+        formdata.setCurrentQuestionFileName(currentQuestionFile.getName());
+        //TODO add text questions
+        //TODO add question type interpreter
+        if (!formdata.getCurrentQuestionFileName().endsWith(".txt"))
+            formdata.setCurrentQuestionType("image");
+        else {
+            formdata.setCurrentQuestionType("text");
+            byte[] encoded = Files.readAllBytes(Paths.get(currentQuestionFile.getAbsolutePath()));
+            String fileText=new String (encoded, UTF_8);
+            formdata.setCurrentQuestionText(fileText);
+        }
+
+        //-----------------------------get number of possible answers for current question
+        int numberOfOptions=Integer.parseInt(formdata.getCurrentQuestionFileName().substring(2,3));
+        System.out.println("---------------------- This question has options: "+numberOfOptions);
+        List<String> listOfOptions= new ArrayList<>();
+        for (int i=0; i<numberOfOptions; i++){
+            listOfOptions.add(Integer.toString(i+1));
+        }
+        formdata.setAnswerOptions(listOfOptions);
+
+        System.out.println("+++++++++++++++++++++++++ question index is at  " + formdata.getQuestionIndex());
 
         //updates question index depending on user request: answer, skip, previous or jump.
         formdata.updateQuestionIndex();
 
         //query updated Candidate object in DB
-        Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
+        Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname(), formdata.getPassword());
 
         //set setAnswer equal to current question answer so its radio button is checked
         int[] allAnswers = updatedCandidate.answers;
@@ -124,30 +165,36 @@ public class WebController {
         return "dbdelete";
     }
 
+
     //adauga raspunsul actual la cele anterioare si salveaza in baza de date, la candidatul din formularul actual
     public void updateAnswers(Formdata formdata) {
 
-        //caut persoana dupa nume
-        Candidate person = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname());
-
+        //search for person by Name, Surname, Password
+        Candidate person = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname(), formdata.getPassword());
         //daca persoana nu exista in DB, creez un nou candidat cu datele primite de la quizz
         if (person == null) {
             Date startTime = new Date();
-            Candidate newPerson = new Candidate(formdata.getFirstname(), formdata.getLastname(), startTime, formdata.getQuizOrder());
+            Candidate newPerson = new Candidate(formdata);
             newPerson.addAnswer(0, null);
             newPerson.setOrder(formdata.getQuizOrder());
+            newPerson.setRemainingtime(TIME_MINUTES);
+            newPerson.setStartTime(startTime);
             repository.save(newPerson);
         }
-        //daca persoana exista
-        else {
+
+        //daca persoana exista si nu a dat raspunsuri
+        else if (null != formdata.getAnswer()) {
             //citesc raspunsurile anterioare
             int[] allAnswers = person.answers;
             //if the answer is not "skip" nor "jump" nor "previous"
-            if (!formdata.getAnswer().equals("skip")
-                    && !formdata.getAnswer().equals("jump")
-                    && !formdata.getAnswer().equals("previous"))
+            if (
+                    !formdata.getAnswer().equals("skip")
+                            && !formdata.getAnswer().equals("jump")
+                            && !formdata.getAnswer().equals("previous"))
                 allAnswers[formdata.getQuestionIndex()] = Integer.parseInt(formdata.getAnswer());
             person.setAnswers(allAnswers);
+            //person.setStartTime(formdata.getStartTime());
+            person.setRemainingtime(formdata.getRemainingTime(formdata.getStartTime()));
             repository.save(person);
             System.out.print("----------------------All answers now updated to: ");
             printArrayValues(person.answers);
