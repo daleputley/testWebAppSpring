@@ -3,7 +3,7 @@ package hello;
 public class WebContent {
 
     public int index = 0;
-    public String link = "" + "<a href='#'>Primul link</a>";
+
     public String answerStatus = "not yet answered";
     public String rowCss = "display:none;";
     public String bootstrapClass;
@@ -16,14 +16,6 @@ public class WebContent {
 
     public void setIndex(int index) {
         this.index = index;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 
     public String getAnswerStatus() {

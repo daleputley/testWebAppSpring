@@ -12,25 +12,33 @@ public class Candidate {
 
     @Id
     public String id;
-
     public String firstName;
     public String lastName;
+    public String password;
     public int[] answers = new int[QUERY_LENGTH];
     int[] order = new int[QUERY_LENGTH];
-
     Query query = new Query();
     Date startTime;
+    int remainingtime;
+
+    public int getRemainingtime() {
+        return remainingtime;
+    }
+
+    public void setRemainingtime(int remainingtime) {
+        this.remainingtime = remainingtime;
+    }
 
     //constructor simplu
     public Candidate() {
     }
 
-    public Candidate(String firstName, String lastName, Date startTime, int[] order) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.startTime = startTime;
-        this.order = order;
-
+    public Candidate(Formdata formdata) {
+        this.firstName = formdata.getFirstname();
+        this.lastName = formdata.getLastname();
+        this.password=formdata.getPassword();
+        this.startTime = formdata.getStartTime();
+        this.order = formdata.getQuizOrder();
         //initializez variabila answers
         for (int i = 0; i < QUERY_LENGTH; i++) {
             answers[i] = 0;
@@ -39,12 +47,14 @@ public class Candidate {
 
     //fac update la answers
     public void addAnswer(int index, Integer newAnswer) {
-
         if ((newAnswer == null)) {
             newAnswer = 0;
         }
         this.answers[index] = newAnswer;
     }
+
+
+    // SETTERS and GETTERS
 
     public String getId() {
         return id;

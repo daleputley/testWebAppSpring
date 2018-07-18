@@ -15,6 +15,16 @@
             border-top: 1px solid #333339 !important;
             border-bottom: 1px solid #333339 !important;
         }
+
+        .redText {
+            color: red;
+        }
+
+        .radio-spaced{
+            margin-right: 10px;
+        }
+
+
     </style>
     </meta>
 </head>
@@ -29,11 +39,13 @@
             <span th:text="*{formdata.lastname}"></span>
         </p>
         <p class="navbar-text">
-            <span class="glyphicon glyphicon-time"></span>
-            Starting time:
+            <!--<span class="glyphicon glyphicon-time"></span>-->
+            Starting time: <span th:text="*{formdata.startDateFormatted}"></span>
         </p>
         <p class="navbar-text">
-            <span th:text="*{formdata.dateFormatted}"></span>
+            <span class="glyphicon glyphicon-time"></span>
+            Remaining: <span th:class="${(formdata.timerCss)}" th:text="*{formdata.remainingMinutes}"></span>
+            <span th:class="${(formdata.timerCss)}">minutes </span>
         </p>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="/thankyou"><span class="glyphicon glyphicon-log-out"></span> Save and quit</a></li>
@@ -46,43 +58,32 @@
             <h3>Question
                 <mark><span th:text="*{(formdata.questionIndex+1)}"></span></mark>
             </h3>
-            <img th:src="@{${'/images/'+formdata.currentQuestion+'.gif'}}" alt="Question" class="img-responsive"/>
+            <span th:switch="${formdata.currentQuestionType}">
+                <img th:case="'image'" th:src="@{${'/questions/'+formdata.currentQuestionFileName}}" alt="Question"
+                     class="img-responsive"/>
+                <p th:case="'text'" th:text="*{(formdata.currentQuestionText)}">Question text should be here</p>
+            </span>
         </div>
         <div class="col-sm-6">
-
             <h3>Your answer:</h3>
-            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
-                <p>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="1"
-                                                       required="required"/> 1.</label>
-                    <label class="radio-inline"><input type="radio" class="radio-inline" th:field="*{answer}"
-                                                       checked="unchecked" th:value="2"/>
-                        2.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="3"/>
-                        3.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="4"/>
-                        4.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="5"/>
-                        5.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="6"/>
-                        6.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="7"/>
-                        7.</label>
-                    <label class="radio-inline"><input type="radio" th:field="*{answer}" checked="unchecked"
-                                                       th:value="8"/>
-                        8.</label>
-                    <input type="hidden" th:field="*{questionIndex}"
-                           th:value="*{questionIndex}"/>
-                </p>
-                <button type="submit" class="btn btn-primary">Submit</button>
-                <button type="reset" class="btn">Reset</button>
-            </form>
+
+        <!--question selection buttons-->
+        <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+            <p>
+                <span th:each="answerOption : ${formdata.answerOptions}">
+                    <label class="radio-inline radio-spaced">
+                        <input type="radio"
+                                                       th:field="*{answer}"
+                                                       checked="unchecked"
+                                                       th:value="${answerOption}"
+                                                       th:text="${answerOption} "
+                                                       required="required"/>
+                    </label>
+                </span>
+            </p>
+            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="reset" class="btn">Reset</button>
+        </form>
 
             <div style="clear:both; height:20px;"></div>
 
@@ -102,7 +103,7 @@
             <div style="clear:both; height:25px;"></div>
 
             <!--question selection buttons-->
-                <span th:each="jumpButton : ${jumpButtons}">
+            <span th:each="jumpButton : ${jumpButtons}">
                          <span th:style="${(jumpButton.rowCss)}">
                             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
                                   style="float:left;" role="form">
@@ -110,19 +111,21 @@
                                     <input type="hidden" name="answer" th:value="jump"/>
                                     <button type="submit" th:class="${(jumpButton.bootstrapClass)}"
                                             style="margin-right:5px;" th:value="${jumpButton.index+1}">
-                                        <span th:text="${jumpButton.index+1}"></span>
+                                        <span th:text="${jumpButton.index+1}">
+
+                                        </span>
                                     </button>
                             </form>
                          </span>
-                </span>
+            </span>
 
             <div style="clear:both; height:120px;"></div>
             <h4>Remaining questions:
                 <span class="label label-default" th:text="${(unansweredQuestions)}"></span>
             </h4>
             <p>
-                <small>Navigate freely through questions using <code> Previous</code>, <code>Skip</code> or
-                    <code>Number </code>
+                <small>Navigate freely through questions using <code>Previous</code>, <code>Skip</code> or
+                    <code>Number</code>
                     buttons.
                 </small>
             </p>

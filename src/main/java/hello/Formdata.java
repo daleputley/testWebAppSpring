@@ -1,7 +1,11 @@
 package hello;
 
+import com.sun.xml.internal.fastinfoset.util.StringArray;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 import static hello.Config.QUERY_LENGTH;
 
@@ -11,20 +15,100 @@ public class Formdata {
     private int questionIndex;
     private int currentQuestion;
     private String answer;
-    private String firstname, lastname;
-    private long startTime;
+    private String firstname, lastname, password;
+    private String currentQuestionType, currentQuestionText, currentQuestionFileName;
+
+    private Date startTime;
     private String startTimeString;
+    private List<String> answerOptions;
+
     private int[] quizOrder = new int[QUERY_LENGTH];
     boolean rerun = false;
-    public String tableCss ="display:;";
-    public String buttonChecked="checked";
+    private String tableCss = "display:;";
     DateFormat formatter = new SimpleDateFormat("HH:mm");
-    private String dateFormatted;
+    private String startDateFormatted;
+    private int remainingMinutes;
+    public String timerCss = "";
     int unansweredCount;
+
+
+    public void updateQuestionIndex() {
+        //increment index only if this is not the first question...
+        if (getAnswer() != null) {
+            // ...AND if user did not press "jump" nor "previous"
+            // ...AND if query end has not been reached
+            //... increment question index
+            if (!getAnswer().equals("jump")
+                    && !getAnswer().equals("previous")
+                    && getQuestionIndex() < (QUERY_LENGTH - 1)) {
+                incrementQuestionIndex();
+                System.out.println("Question index incremented to: " + getQuestionIndex());
+            }
+            //but if user has pressed "previous", decrement question index
+            if (getAnswer().equals("previous") && getQuestionIndex() > 0) {
+                decrementQuestionIndex();
+                System.out.println("Question index decremented to: " + getQuestionIndex());
+            }
+        }
+    }
+
+    public int getRemainingTime(Date startTime) {
+        setStartTime(startTime);
+        Date currenttime = new Date();
+        int duration = (int) ((currenttime.getTime() - startTime.getTime()) / 1000);
+        int remaining = (60 * Config.TIME_MINUTES) - duration;
+        setRemainingMinutes((int)Math.round(remaining / 60.00));
+        return remaining;
+    }
 
 
     //------------------------------------------- Getters and Setters ---------------------------------
 
+
+    public List <String> getAnswerOptions() {return answerOptions;}
+
+    public void setAnswerOptions(List<String> answerOptions) {this.answerOptions = answerOptions;}
+
+    public String getCurrentQuestionFileName() {return currentQuestionFileName;    }
+
+    public void setCurrentQuestionFileName(String currentQuestionFileName) {this.currentQuestionFileName = currentQuestionFileName;}
+
+    public String getCurrentQuestionType() {
+        return currentQuestionType;
+    }
+
+    public void setCurrentQuestionType(String currentQuestionType) {
+        this.currentQuestionType = currentQuestionType;
+    }
+
+    public String getCurrentQuestionText() {
+        return currentQuestionText;
+    }
+
+    public void setCurrentQuestionText(String currentQuestionText) {
+        this.currentQuestionText = currentQuestionText;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public int getRemainingMinutes() {
+        return remainingMinutes;
+    }
+
+    public void setRemainingMinutes(int remainingMinutes) {
+        this.remainingMinutes = remainingMinutes;
+        if (remainingMinutes < 5) this.timerCss = "redText";
+    }
+
+    public String getStartDateFormatted() {
+        return startDateFormatted;
+    }
 
     public int getUnansweredCount() {
         return unansweredCount;
@@ -80,7 +164,6 @@ public class Formdata {
 
     public void setQuestionIndex(int questionNR) {
         this.questionIndex = questionNR;
-
     }
 
     public String getAnswer() {
@@ -91,14 +174,13 @@ public class Formdata {
         this.answer = answer;
     }
 
-    public long getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(long startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
-        dateFormatted = formatter.format(startTime);
-        System.out.println(startTime);
+        this.startDateFormatted = new SimpleDateFormat("HH:mm 'on' d MMM yyyyy").format(startTime);
     }
 
     public void incrementQuestionIndex() {
@@ -107,14 +189,6 @@ public class Formdata {
 
     public void decrementQuestionIndex() {
         this.questionIndex--;
-    }
-
-    public String getDateFormatted() {
-        return dateFormatted;
-    }
-
-    public void setDateFormatted(String dateFormatted) {
-        this.dateFormatted = dateFormatted;
     }
 
     public void setQuizOrder(int[] quizOrder) {

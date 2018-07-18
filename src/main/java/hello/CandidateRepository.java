@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface CandidateRepository extends MongoRepository<Candidate, String>{
 
-    public Candidate findCandidateByFirstNameAndAndLastName(String firstName, String lastName);
+    Candidate findCandidateByFirstNameAndAndLastName(String firstName, String lastName, String password);
 
 }
 

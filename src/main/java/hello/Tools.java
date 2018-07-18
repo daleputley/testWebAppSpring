@@ -3,12 +3,13 @@ package hello;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import static hello.Config.QUERY_LENGTH;
 
 @Service
-public class Logic {
+public class Tools {
 
     //replaces characters in the string or answers
     public String replaceCharAt(String s, int pos, String c) {
@@ -61,6 +62,17 @@ public class Logic {
         }
 
         return randomOrder;
+    }
+
+    public List<WebContent> buildJumbbuttonList() {
+        List<WebContent> jumpButtons = new ArrayList<>();
+        for (int i = 0; i < QUERY_LENGTH; i++) {
+            WebContent webContent = new WebContent();
+            webContent.setIndex(i);
+            webContent.setAnswerStatus("not answered");
+            jumpButtons.add(webContent);
+        }
+        return jumpButtons;
     }
 
     public static ArrayList<WebContent> updateJumpButtons(int[] allAnswers, int questionIndex, ArrayList<WebContent> jumpButtons) {
