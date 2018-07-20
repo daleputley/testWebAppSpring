@@ -1,7 +1,11 @@
 package hello;
 
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -103,5 +107,15 @@ public class Tools {
                 unanswered++;
         }
         return unanswered;
+    }
+
+    public static File getCurrentQuestionFile (int currentQuestion) throws IOException {
+        File dir = new ClassPathResource("/static/questions").getFile();
+        File[] matchingFiles = dir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.startsWith(Integer.toString(currentQuestion));
+            }
+        });
+        return matchingFiles[0];
     }
 }

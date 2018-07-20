@@ -1,13 +1,16 @@
 package hello;
 
-import com.sun.xml.internal.fastinfoset.util.StringArray;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 import static hello.Config.QUERY_LENGTH;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Formdata {
 
@@ -57,7 +60,7 @@ public class Formdata {
         Date currenttime = new Date();
         int duration = (int) ((currenttime.getTime() - startTime.getTime()) / 1000);
         int remaining = (60 * Config.TIME_MINUTES) - duration;
-        setRemainingMinutes((int)Math.round(remaining / 60.00));
+        setRemainingMinutes((int) Math.round(remaining / 60.00));
         return remaining;
     }
 
@@ -65,19 +68,40 @@ public class Formdata {
     //------------------------------------------- Getters and Setters ---------------------------------
 
 
-    public List <String> getAnswerOptions() {return answerOptions;}
+    public List<String> getAnswerOptions() {
+        return answerOptions;
+    }
 
-    public void setAnswerOptions(List<String> answerOptions) {this.answerOptions = answerOptions;}
+    public void setAnswerOptions(List<String> answerOptions) {
+        this.answerOptions = answerOptions;
+    }
 
-    public String getCurrentQuestionFileName() {return currentQuestionFileName;    }
+    public String getCurrentQuestionFileName() {
+        return currentQuestionFileName;
+    }
 
-    public void setCurrentQuestionFileName(String currentQuestionFileName) {this.currentQuestionFileName = currentQuestionFileName;}
+    public void setCurrentQuestionFileName(String currentQuestionFileName) {
+        this.currentQuestionFileName = currentQuestionFileName;
+    }
 
     public String getCurrentQuestionType() {
         return currentQuestionType;
     }
 
     public void setCurrentQuestionType(String currentQuestionType) {
+        this.currentQuestionType = currentQuestionType;
+    }
+
+    public void setCurrentQuestionType(File currentQuestionFile) throws IOException {
+        if (!currentQuestionFileName.endsWith(".txt"))
+            setCurrentQuestionType("image");
+        else {
+            setCurrentQuestionType("text");
+            byte[] encoded = Files.readAllBytes(Paths.get(currentQuestionFile.getAbsolutePath()));
+            String fileText = new String(encoded, UTF_8);
+            setCurrentQuestionText(fileText);
+        }
+
         this.currentQuestionType = currentQuestionType;
     }
 

@@ -1,8 +1,6 @@
 package hello;
 
-import com.sun.xml.internal.fastinfoset.util.StringArray;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,11 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +17,6 @@ import java.util.List;
 import static hello.Config.TIME_MINUTES;
 import static hello.Tools.unansweredCount;
 import static hello.Tools.updateJumpButtons;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Controller
 @SessionAttributes({"formdata", "jumpButtons"})
@@ -86,37 +79,22 @@ public class WebController {
         int[] orderOfQuestions = formdata.getQuizOrder();
         int currentQuestion = orderOfQuestions[(formdata.getQuestionIndex())];
 
-        //TODO improve selection of matching filename
-        // get filename based on question index
-        File dir = new ClassPathResource("/static/questions").getFile();
-        File[] matchingFiles = dir.listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return name.startsWith(Integer.toString(currentQuestion));
-            }
-        });
-        File currentQuestionFile=matchingFiles[0];
+        File currentQuestionFile = Tools.getCurrentQuestionFile(currentQuestion);
+        //identify the question file in the resource folder, and set its name in the formdata object
         formdata.setCurrentQuestionFileName(currentQuestionFile.getName());
-        //TODO add text questions
-        //TODO add question type interpreter
-        if (!formdata.getCurrentQuestionFileName().endsWith(".txt"))
-            formdata.setCurrentQuestionType("image");
-        else {
-            formdata.setCurrentQuestionType("text");
-            byte[] encoded = Files.readAllBytes(Paths.get(currentQuestionFile.getAbsolutePath()));
-            String fileText=new String (encoded, UTF_8);
-            formdata.setCurrentQuestionText(fileText);
-        }
+        //identify the type of the question (text or image) and store the type in the formdata object
+        formdata.setCurrentQuestionType(currentQuestionFile);
 
         //-----------------------------get number of possible answers for current question
-        int numberOfOptions=Integer.parseInt(formdata.getCurrentQuestionFileName().substring(2,3));
-        System.out.println("---------------------- This question has options: "+numberOfOptions);
-        List<String> listOfOptions= new ArrayList<>();
-        for (int i=0; i<numberOfOptions; i++){
-            listOfOptions.add(Integer.toString(i+1));
+        int numberOfOptions = Integer.parseInt(formdata.getCurrentQuestionFileName().substring(2, 3));
+//        System.out.println("---------------------- This question has options: " + numberOfOptions);
+        List<String> listOfOptions = new ArrayList<>();
+        for (int i = 0; i < numberOfOptions; i++) {
+            listOfOptions.add(Integer.toString(i + 1));
         }
         formdata.setAnswerOptions(listOfOptions);
 
-        System.out.println("+++++++++++++++++++++++++ question index is at  " + formdata.getQuestionIndex());
+//        System.out.println("+++++++++++++++++++++++++ question index is at  " + formdata.getQuestionIndex());
 
         //updates question index depending on user request: answer, skip, previous or jump.
         formdata.updateQuestionIndex();
@@ -196,8 +174,8 @@ public class WebController {
             //person.setStartTime(formdata.getStartTime());
             person.setRemainingtime(formdata.getRemainingTime(formdata.getStartTime()));
             repository.save(person);
-            System.out.print("----------------------All answers now updated to: ");
-            printArrayValues(person.answers);
+//            System.out.print("----------------------All answers now updated to: ");
+//            printArrayValues(person.answers);
         }
     }
 
