@@ -15,7 +15,7 @@ public class Candidate {
     public String firstName;
     public String lastName;
     public String password;
-    public int[] answers = new int[QUERY_LENGTH];
+    public String[] answers = new String[QUERY_LENGTH];
     int[] order = new int[QUERY_LENGTH];
     Query query = new Query();
     Date startTime;
@@ -41,14 +41,14 @@ public class Candidate {
         this.order = formdata.getQuizOrder();
         //initializez variabila answers
         for (int i = 0; i < QUERY_LENGTH; i++) {
-            answers[i] = 0;
+            answers[i] = "0";
         }
     }
 
     //fac update la answers
-    public void addAnswer(int index, Integer newAnswer) {
+    public void addAnswer(int index, String newAnswer) {
         if ((newAnswer == null)) {
-            newAnswer = 0;
+            newAnswer = "0";
         }
         this.answers[index] = newAnswer;
     }
@@ -80,11 +80,11 @@ public class Candidate {
         this.lastName = lastName;
     }
 
-    public int[] getAnswers() {
+    public String[] getAnswers() {
         return answers;
     }
 
-    public void setAnswers(int[] answers) {
+    public void setAnswers(String[] answers) {
         this.answers = answers;
     }
 

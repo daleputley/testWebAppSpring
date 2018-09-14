@@ -21,19 +21,19 @@ public class Tools {
     }
 
     //analyses string and returns quiz results
-    public String evaluate(int[] results) {
+    public String evaluate(String[] results, int[] order) {
         String mark = "0";
         int hits = 0;
         int percentage;
 
         for (int i = 0; i < hello.Config.answerList.size(); i++) {
-            int correctAnswer = Integer.parseInt(hello.Config.answerList.get(i));
-            if (results[i] == correctAnswer) {
+            String correctAnswer = hello.Config.answerList.get(order[i]-1);
+            if (results[i].equals(correctAnswer)) {
                 hits++;
             }
         }
         percentage = (int) (long) (hits * 100 / results.length);
-        mark = " " + Integer.toString(hits) + " out of " + results.length + " - " + Integer.toString(percentage) + "%";
+        mark = Integer.toString(percentage) + "%" +  " with " + Integer.toString(hits) + " out of " + results.length;
         return mark;
     }
 
@@ -68,10 +68,10 @@ public class Tools {
         return randomOrder;
     }
 
-    public List<WebContent> buildJumbbuttonList() {
-        List<WebContent> jumpButtons = new ArrayList<>();
+    public List<JumpButtons> buildJumbbuttonList() {
+        List<JumpButtons> jumpButtons = new ArrayList<>();
         for (int i = 0; i < QUERY_LENGTH; i++) {
-            WebContent webContent = new WebContent();
+            JumpButtons webContent = new JumpButtons();
             webContent.setIndex(i);
             webContent.setAnswerStatus("not answered");
             jumpButtons.add(webContent);
@@ -79,13 +79,13 @@ public class Tools {
         return jumpButtons;
     }
 
-    public static ArrayList<WebContent> updateJumpButtons(int[] allAnswers, int questionIndex, ArrayList<WebContent> jumpButtons) {
+    public static ArrayList<JumpButtons> updateJumpButtons(String[] allAnswers, int questionIndex, ArrayList<JumpButtons> jumpButtons) {
         String status = "";
         String style="";
         String bootstrapClass;
         //parse string, if answer is equal to 0,
         for (int i = 0; i < allAnswers.length; i++) {
-            if (allAnswers[i] == 0) {
+            if (allAnswers[i].equals("0")) {
                 status = "not answered";
                 bootstrapClass="btn btn-primary btn-sm";
             } else {
@@ -100,10 +100,10 @@ public class Tools {
         return jumpButtons;
     }
 
-    public static int unansweredCount(int[] allAnswers) {
+    public static int unansweredCount(String[] allAnswers) {
         int unanswered = 0;
         for (int i = 0; i < allAnswers.length; i++) {
-            if (allAnswers[i] == 0)
+            if (allAnswers[i].equals("0"))
                 unanswered++;
         }
         return unanswered;

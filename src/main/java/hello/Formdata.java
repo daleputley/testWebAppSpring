@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,28 +15,26 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class Formdata {
 
-    //form data
-    private int questionIndex;
-    private int currentQuestion;
-    private String answer;
-    private String firstname, lastname, password;
-    private String currentQuestionType, currentQuestionText, currentQuestionFileName;
-
-    private Date startTime;
-    private String startTimeString;
-    private List<String> answerOptions;
-
-    private int[] quizOrder = new int[QUERY_LENGTH];
-    boolean rerun = false;
-    private String tableCss = "display:;";
-    DateFormat formatter = new SimpleDateFormat("HH:mm");
-    private String startDateFormatted;
-    private int remainingMinutes;
-    public String timerCss = "";
-    int unansweredCount;
+    private int questionIndex;                      //the index of the question
+    private int currentQuestion;                    //the current question
+    private String answer;                          //answer sent via form
+    private String firstname, lastname, password;   //user details
+    private String currentQuestionType;             //it can be image or txt
+    private String currentQuestionText;             //content of text questions
+    private String currentQuestionFileName;         //the name of the file containing current question
+    private String startTimeString;                 // time when the query started
+    private Date startTime;                         // time when query started
+    private List<String> answerOptions;             // how many options each question has
+    private int[] quizOrder = new int[QUERY_LENGTH];// the order of the questions in the query
+//    private String tableCss = "display:;";          //css for
+    DateFormat formatter = new SimpleDateFormat("HH:mm");// date format
+    private String startDateFormatted;              //the string containing the starting time
+    private int remainingMinutes;                   //remaining time for user to complete quizz
+    public String timerCss = "";                    //CSS for string showing time
+    int unansweredCount;                            // how many questions unanswered
 
 
-    public void updateQuestionIndex() {
+    public void updateQuestionIndex() throws IOException {
         //increment index only if this is not the first question...
         if (getAnswer() != null) {
             // ...AND if user did not press "jump" nor "previous"
@@ -53,7 +52,33 @@ public class Formdata {
                 System.out.println("Question index decremented to: " + getQuestionIndex());
             }
         }
+        //set various values depending on current question index
+        updateQuestionFileDetails();
     }
+
+
+    private void updateQuestionFileDetails() throws IOException {
+        //setting current question as the "n"-th question of the pre-established order,
+        //where "n" is formdata.getQuestionIndex()
+        int[] orderOfQuestions = getQuizOrder();
+        int currentQuestion = orderOfQuestions[(getQuestionIndex())];
+        File currentQuestionFile = Tools.getCurrentQuestionFile(currentQuestion);
+
+        //identify the question file in the resource folder, and set its name in the formdata object
+        setCurrentQuestionFileName(currentQuestionFile.getName());
+
+        //identify the type of the question (text or image) and store the type in the formdata object
+        setCurrentQuestionType(currentQuestionFile);
+
+        //-----------------------------get number of possible answers for current question
+        int numberOfOptions = Integer.parseInt(getCurrentQuestionFileName().substring(2, 3));
+        List<String> listOfOptions = new ArrayList<>();
+        for (int i = 0; i < numberOfOptions; i++) {
+            listOfOptions.add(Integer.toString(i + 1));
+        }
+        setAnswerOptions(listOfOptions);
+    }
+
 
     public int getRemainingTime(Date startTime) {
         setStartTime(startTime);
@@ -142,21 +167,13 @@ public class Formdata {
         this.unansweredCount = unansweredCount;
     }
 
-    public String getTableCss() {
-        return tableCss;
-    }
+//    public String getTableCss() {
+//        return tableCss;
+//    }
 
-    public void setTableCss(String tableCss) {
-        this.tableCss = tableCss;
-    }
-
-    public boolean isRerun() {
-        return rerun;
-    }
-
-    public void setRerun(boolean rerun) {
-        this.rerun = rerun;
-    }
+//    public void setTableCss(String tableCss) {
+//        this.tableCss = tableCss;
+//    }
 
     public String getFirstname() {
         return firstname;

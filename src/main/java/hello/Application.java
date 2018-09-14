@@ -6,17 +6,19 @@ import static hello.Config.QUERY_LENGTH;
 @SpringBootApplication
 class Application /*implements CommandLineRunner */{
 
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
-
-
-    //TODO: - afisare buton ANSWER LATER (intrebarea ba primi answer 0)
-    //TODO: - afisarea linkurilor catre intrebarile la care nu s-a raspuns
-    //TODO: - repara timerul
-    //TODO: - trimite mail cu rezultatele unui quiz
-    //TODO: - interfata admin (vizualizeaza raspunsuri, sterge candidat, seteaza admini care sa primeasca mail)
-
-
 }
+// TODO Faza 1
+// TODO: -excel/csv pentru intrebarile tip text
+// TODO: -afisare rezultate pe categorii
+// TODO: -java script cu timer - si cu call http cand expira timpul
+// TODO: -metoda de randomizare poate fi imbunatatita
+
+// TODO Faza 2
+// TODO: - session management cu login initial
+// TODO: - adaugare drepturi la user / admin
+// TODO: - salvare intrebari in baza de date (excel si imagini)
+// TODO: - interfata admin pentru modificare intrebari
+// TODO: - editare categorii (CRUD)

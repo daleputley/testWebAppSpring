@@ -1,6 +1,6 @@
 package hello;
 
-public class WebContent {
+public class JumpButtons {
 
     public int index = 0;
 

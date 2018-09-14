@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,7 +45,7 @@ public class WebController {
         Formdata formdata = new Formdata();
 
         //build jumpButtons object and populate with initial webcontent objects;
-        List<WebContent> jumpButtons = tools.buildJumbbuttonList();
+        List<JumpButtons> jumpButtons = tools.buildJumbbuttonList();
 
         //initialize questions index
         formdata.setQuestionIndex(0);
@@ -64,50 +63,27 @@ public class WebController {
 
     @PostMapping("/query")
     public String queryController(@ModelAttribute("formdata") Formdata formdata,
-                                  @ModelAttribute("jumpButtons") ArrayList<WebContent> jumpButtons,
+                                  @ModelAttribute("jumpButtons") ArrayList<JumpButtons> jumpButtons,
                                   Model model) throws IOException {
 
-        //default html template to be displayed
         String page = "query";
-
-        //creates candidate if first iteration
-        //update answers array based on formdata, and store it in Mongo DB.
-        updateAnswers(formdata);
-
-        //setting current question as the "n"-th question of the pre-established order,
-        //where "n" is formdata.getQuestionIndex()
-        int[] orderOfQuestions = formdata.getQuizOrder();
-        int currentQuestion = orderOfQuestions[(formdata.getQuestionIndex())];
-
-        File currentQuestionFile = Tools.getCurrentQuestionFile(currentQuestion);
-        //identify the question file in the resource folder, and set its name in the formdata object
-        formdata.setCurrentQuestionFileName(currentQuestionFile.getName());
-        //identify the type of the question (text or image) and store the type in the formdata object
-        formdata.setCurrentQuestionType(currentQuestionFile);
-
-        //-----------------------------get number of possible answers for current question
-        int numberOfOptions = Integer.parseInt(formdata.getCurrentQuestionFileName().substring(2, 3));
-//        System.out.println("---------------------- This question has options: " + numberOfOptions);
-        List<String> listOfOptions = new ArrayList<>();
-        for (int i = 0; i < numberOfOptions; i++) {
-            listOfOptions.add(Integer.toString(i + 1));
-        }
-        formdata.setAnswerOptions(listOfOptions);
-
-//        System.out.println("+++++++++++++++++++++++++ question index is at  " + formdata.getQuestionIndex());
+        //this creates candidate if first iteration
+        saveAnswersToDb(formdata);
 
         //updates question index depending on user request: answer, skip, previous or jump.
+        //it also updates related values in formdata object
         formdata.updateQuestionIndex();
 
         //query updated Candidate object in DB
         Candidate updatedCandidate = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname(), formdata.getPassword());
 
         //set setAnswer equal to current question answer so its radio button is checked
-        int[] allAnswers = updatedCandidate.answers;
-        formdata.setAnswer(Integer.toString(allAnswers[formdata.getQuestionIndex()]));
+        String[] allAnswers = updatedCandidate.answers;
+        formdata.setAnswer(allAnswers[formdata.getQuestionIndex()]);
 
-        //update jumpButtons, based on answers so far
+        //update the CSS style of the jumpButtons, based on answers received so far
         jumpButtons = updateJumpButtons(allAnswers, formdata.getQuestionIndex(), jumpButtons);
+
         int unansweredQuestions = unansweredCount(allAnswers);
 
         //time counter management
@@ -127,10 +103,13 @@ public class WebController {
     public String reports(Model model) {
         String page = "dbcontent";
         Tools tools = new Tools();
-        String allAnswers = "";
+        List<String[]> allAnswers = new ArrayList<>();
         for (Candidate candidate : repository.findAll()) {
-            allAnswers += candidate.getFirstName() + " " + candidate.getLastName() + ":\n"
-                    + tools.evaluate(candidate.answers) + ".\n\n";
+            String[] candidateAnswers = new String[3];
+            candidateAnswers[0] = candidate.getFirstName();
+            candidateAnswers[1] = candidate.getLastName();
+            candidateAnswers[2] = tools.evaluate(candidate.answers, candidate.order);
+            allAnswers.add(candidateAnswers);
         }
         model.addAttribute("dbContent", allAnswers);
         return page;
@@ -145,7 +124,7 @@ public class WebController {
 
 
     //adauga raspunsul actual la cele anterioare si salveaza in baza de date, la candidatul din formularul actual
-    public void updateAnswers(Formdata formdata) {
+    public void saveAnswersToDb(Formdata formdata) {
 
         //search for person by Name, Surname, Password
         Candidate person = repository.findCandidateByFirstNameAndAndLastName(formdata.getFirstname(), formdata.getLastname(), formdata.getPassword());
@@ -163,15 +142,14 @@ public class WebController {
         //daca persoana exista si nu a dat raspunsuri
         else if (null != formdata.getAnswer()) {
             //citesc raspunsurile anterioare
-            int[] allAnswers = person.answers;
+            String[] allAnswers = person.answers;
             //if the answer is not "skip" nor "jump" nor "previous"
             if (
                     !formdata.getAnswer().equals("skip")
                             && !formdata.getAnswer().equals("jump")
                             && !formdata.getAnswer().equals("previous"))
-                allAnswers[formdata.getQuestionIndex()] = Integer.parseInt(formdata.getAnswer());
+                allAnswers[formdata.getQuestionIndex()] = formdata.getAnswer();
             person.setAnswers(allAnswers);
-            //person.setStartTime(formdata.getStartTime());
             person.setRemainingtime(formdata.getRemainingTime(formdata.getStartTime()));
             repository.save(person);
 //            System.out.print("----------------------All answers now updated to: ");

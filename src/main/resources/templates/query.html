@@ -20,7 +20,7 @@
             color: red;
         }
 
-        .radio-spaced{
+        .radio-spaced {
             margin-right: 10px;
         }
 
@@ -61,31 +61,59 @@
             <span th:switch="${formdata.currentQuestionType}">
                 <img th:case="'image'" th:src="@{${'/questions/'+formdata.currentQuestionFileName}}" alt="Question"
                      class="img-responsive"/>
-                <p th:case="'text'" th:text="*{(formdata.currentQuestionText)}">Question text should be here</p>
+                <p class="lead" th:case="'text'" th:text="*{(formdata.currentQuestionText)}">Question text should be here</p>
             </span>
         </div>
         <div class="col-sm-6">
             <h3>Your answer:</h3>
 
-        <!--question selection buttons-->
-        <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
-            <p>
+            <!--radio button form -->
+           <span th:if="${formdata.currentQuestionType == 'image'}">
+            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+                <p>
                 <span th:each="answerOption : ${formdata.answerOptions}">
                     <label class="radio-inline radio-spaced">
                         <input type="radio"
-                                                       th:field="*{answer}"
-                                                       checked="unchecked"
-                                                       th:value="${answerOption}"
-                                                       th:text="${answerOption} "
-                                                       required="required"/>
+                               th:field="*{answer}"
+                               checked="unchecked"
+                               th:value="${answerOption}"
+                               th:text="${answerOption} "
+                               required="required"/>
                     </label>
                 </span>
-            </p>
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="reset" class="btn">Reset</button>
-        </form>
+                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn">Reset</button>
+            </form>
+           </span>
 
-            <div style="clear:both; height:20px;"></div>
+            <!--textarea for answer-->
+           <span th:if="${formdata.currentQuestionType == 'text'}">
+            <form action="#" th:action="@{/query}" th:object="${formdata}" method="post">
+                <p>
+                         <textarea class="form-control" rows="2" id="comment"
+                                   th:field="*{answer}"
+                                   required="required"
+                                   placeholder="Type your answer here"
+                         ></textarea>
+                </p>
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="reset" class="btn">Reset</button>
+            </form>
+           </span>
+
+            <div style="clear:both; height:60px;"></div>
+
+            <p>
+                <small>Navigate freely through questions using <code>Previous</code>, <code>Skip</code> or
+                    <code>Number</code>
+                    buttons.
+                </small>
+                <br/>
+                <small>When finished, click <code>Save and quit</code> at the top-right corner.</small>
+            </p>
+
+            <div style="clear:both; height:10px;"></div>
 
             <!--previous question button -->
             <form action="#" th:action="@{/query}" th:object="${formdata}" method="post"
@@ -100,7 +128,7 @@
                 <button type="submit" class="btn">Skip &#8680;</button>
             </form>
 
-            <div style="clear:both; height:25px;"></div>
+            <div style="clear:both; height:20px;"></div>
 
             <!--question selection buttons-->
             <span th:each="jumpButton : ${jumpButtons}">
@@ -119,19 +147,13 @@
                          </span>
             </span>
 
-            <div style="clear:both; height:120px;"></div>
+            <div style="clear:both; height:20px;"></div>
+
             <h4>Remaining questions:
                 <span class="label label-default" th:text="${(unansweredQuestions)}"></span>
             </h4>
-            <p>
-                <small>Navigate freely through questions using <code>Previous</code>, <code>Skip</code> or
-                    <code>Number</code>
-                    buttons.
-                </small>
-            </p>
-            <p>
-                <small>When finished, click <code>Save and quit</code> at the top-right corner.</small>
-            </p>
+
+
         </div>
     </div>
     <div class="row">

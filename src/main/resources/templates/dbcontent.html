@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Tremend QA Quizz</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -31,10 +31,30 @@
         </div>
         <div class="col-sm-6" style="padding-bottom: 10%;">
             <h1>Quiz Results</h1>
-            <p th:text="${dbContent}" />
             <!--<a href="/welcome" class="btn btn-primary" role="button">Start the test.</a>-->
             <!--<a href="/dbcontent" class="btn btn-primary" role="button">See previous results.</a>-->
             <!--<a href="/dbdelete" class="btn btn-primary" role="button">Delete database content.</a>-->
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Lastname</th>
+                    <th>Result</th>
+                </tr>
+                </thead>
+                <tbody>
+                <span th:each="candidate: ${dbContent}">
+                    <tr>
+                            <td th:text="${candidate[0]} ">John</td>
+                            <td th:text="${candidate[1]} ">John</td>
+                            <td th:text="${candidate[2]} ">John</td>
+                    </tr>
+                </span>
+                </tbody>
+            </table>
+
+
         </div>
         <div class="col-sm-3" style="padding-bottom: 10%;">
         </div>
