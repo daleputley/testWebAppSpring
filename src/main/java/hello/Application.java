@@ -1,7 +1,6 @@
 package hello;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import static hello.Config.QUERY_LENGTH;
 
 @SpringBootApplication
 class Application /*implements CommandLineRunner */{
@@ -11,7 +10,14 @@ class Application /*implements CommandLineRunner */{
     }
 }
 // TODO Faza 1
-// TODO: -excel/csv pentru intrebarile tip text
+// TODO: de pus intrebarile in mongod: colectie de date cu intrebarile
+//      -fiecare obiect contine
+//          - id unic
+//          - fisierul foto(poate fi null)
+//          - sau textul(poate fi null)
+//          - numarul de variante de raspuns
+//          - categoria intrebarii
+//          - raspunsul corect (poate fi null)
 // TODO: -afisare rezultate pe categorii
 // TODO: -java script cu timer - si cu call http cand expira timpul
 // TODO: -metoda de randomizare poate fi imbunatatita

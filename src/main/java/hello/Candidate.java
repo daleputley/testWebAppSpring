@@ -2,12 +2,14 @@ package hello;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 
 import static hello.Config.QUERY_LENGTH;
 
 //clasa candidata care contine datele de contact si un string cu raspunsurile lui
+@Repository
 public class Candidate {
 
     @Id

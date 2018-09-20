@@ -79,7 +79,6 @@ public class Formdata {
         setAnswerOptions(listOfOptions);
     }
 
-
     public int getRemainingTime(Date startTime) {
         setStartTime(startTime);
         Date currenttime = new Date();
@@ -88,7 +87,6 @@ public class Formdata {
         setRemainingMinutes((int) Math.round(remaining / 60.00));
         return remaining;
     }
-
 
     //------------------------------------------- Getters and Setters ---------------------------------
 
